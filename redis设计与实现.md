@@ -136,8 +136,6 @@ WATCH命令是一个乐观锁，可以在EXEC命令执行之前，监视数据�
 watch "name"     |                 |
 multi            |                 |
 set "name" "hehe"|                 |
-                 |set "name" "haha"|
+'                |set "name" "haha"|
 返回 error       |                 |
 
--
-    * 2.1 
