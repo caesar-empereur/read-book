@@ -1,0 +1,14 @@
+.gradle/
+.maven/
+build/
+out/
+.idea/
+.classpath
+*.log
+*.iml
+dev/
+application-dev.properties
+target/
+.project/
+.project
+.settings/
