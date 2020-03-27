@@ -15,4 +15,4 @@
   
 - innodb 存储引擎架构
 
-![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/innodb.png)
+![innodb](https://raw.githubusercontent.com/caesar-empereur/read-book/master/photo/mysql/innodb.png?token=AGG6JXBIXZRC7AVYK4R26R26PXDZU)
