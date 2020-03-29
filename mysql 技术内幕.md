@@ -16,3 +16,9 @@
 - innodb 存储引擎架构
 
 ![innodb](https://raw.githubusercontent.com/caesar-empereur/read-book/master/photo/mysql/innodb.png?token=AGG6JXBIXZRC7AVYK4R26R26PXDZU)
+
+
+- mysql 数据文件
+  * 表都是根据主键顺序组织存放的，这种存储方式的表称为索引组织表
+  * 页 是mysql 磁盘上最小单位的数据存储形式，也叫 块，每页的数据大小是 16 KB
+  * 页存放的行记录也是有硬性定义的，最多允许存放16KB / 2-200行的记录，即7992行记录
