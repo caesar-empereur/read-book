@@ -1,11 +1,11 @@
 ## 1 章 mysql 技术体系
 
-- 实例与数据库的区别
+- 1 实例与数据库的区别
   * mysql 数据库是指操作系统文件的集合
   * mysql 实例是系统进程与内存区域的组成
   * 数据库实例才是处理数据的
   
-- innodb 存储引擎的特点
+- 2 innodb 存储引擎的特点
 
   * 支持事务
   * 行锁设计
@@ -15,10 +15,17 @@
   
 - innodb 存储引擎架构
 
-![innodb](https://raw.githubusercontent.com/caesar-empereur/read-book/master/photo/mysql/innodb.png?token=AGG6JXBIXZRC7AVYK4R26R26PXDZU)
+![innodb](https://raw.githubusercontent.com/caesar-empereur/read-book/master/photo/mysql/innodb.png)
 
 
-- mysql 数据文件
+- 4 mysql 数据文件
   * 表都是根据主键顺序组织存放的，这种存储方式的表称为索引组织表
   * 页 是mysql 磁盘上最小单位的数据存储形式，也叫 块，每页的数据大小是 16 KB
   * 页存放的行记录也是有硬性定义的，最多允许存放16KB / 2-200行的记录，即7992行记录
+  
+- 5 mysql 索引
+  * 树的数据结构
+    * 平衡二叉树，红黑树等查找算法都是在内存中进行的，适合小文件，不适合磁盘查找的大文件
+  * B 树分为 **[B-树](#B-树)**，**[B+树](#B+树)**，但都是 **[多路平衡查找](#多路平衡查找)** 的树结构
+    * **[B-树](#B-树)** 的一个重要特点是 非叶子节点也会存储数据 **[非叶子节点也会存储数据](#非叶子节点也会存储数据)**
+    
