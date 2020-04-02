@@ -72,7 +72,7 @@
       |时间|事务A|事务B|
       |-----------|-------------------|---------|
       |t1 |select * from table_a where a=1 for update|'|
-      |t1 ||select * from table_a where a=2 for update|
-      |t1 |select * from table_a where a=2 for update|'|
-      |t1 |'|select * from table_a where a=1 for update|
- 
+      |t2 ||select * from table_a where a=2 for update|
+      |t3 |select * from table_a where a=2 for update|'|
+      |t4 |'|select * from table_a where a=1 for update|
+      |t5 |'|error, deadlock|
