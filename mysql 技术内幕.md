@@ -106,4 +106,33 @@
   * puege 操作用于将 delete update 操作真正删除
   * 这么设计的原因是2为了实现mysql的mvcc，一个事务对某行提交修改时，不会真正删除，其他事务对改行也存在改动，因此需要保存改行的前一个状态，是否真正删除需要puege判断是否有另一个事务对改行操作
 
+* 控制事务的语句
+  * mysql 默认情况下，事务是自动提交的
+  * START TRANSACTION | BEGIN：显式地开启一个事务
+  * ROLLBACK 回滚事务
+  * SET TRANSACTION 设置事务的隔离级别
+  * 隐式提交事务的 语句 alter table, create index, drop table, drop index
+  
+* mysql 分布式事务
 
+>>mysql 本身是支持分布式事务的，是由 XA 事务实现的
+
+  * XA事务由一个或多个资源管理器、一个事务管理器以及一个应用程序组成
+  
+    * 资源管理器：提供访问事务资源的方法。通常一个数据库就是一个资源管理器
+    * 事务管理器：协调参与全局事务中的各个事务。需要和参与全局事务的所有资源管理器进行通信
+    * 应用程序：定义事务的边界，指定全局事务中的操作
+    
+  * mysql XA 事务的操作流程
+    * XA START|BEGIN xid
+    * XA END xid
+    * XA PREPARE xid
+    * XA COMMIT xid
+    * XA ROLLBACK xid
+    * XA RECOVER xid
+    
+  * 不好的事务提交习惯
+    * 循环中提交事务
+    * 自动提交事务
+    * 长事务(执行时间很长的事务)
+    
