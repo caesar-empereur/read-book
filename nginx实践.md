@@ -80,7 +80,7 @@ http {
         server_name  manager.com;
 		return      301 https://$server_name$request_uri;
         location / {
-			proxy_pass http://localhost:8082;
+			proxy_pass http://localhost:8083;
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Port $server_port;
@@ -126,7 +126,7 @@ http {
         ssl_prefer_server_ciphers  on;
 
 		location / {
-			proxy_pass http://localhost:8082;
+			proxy_pass http://localhost:8083;
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Port $server_port;
