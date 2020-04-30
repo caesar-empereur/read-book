@@ -28,7 +28,7 @@
 
 - nginx 配置详细配置文件
 
-```properties
+```
 
 #user  nobody;
 worker_processes  1;
