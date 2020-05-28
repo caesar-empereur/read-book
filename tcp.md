@@ -116,16 +116,9 @@
             - java nio 包括了通道，缓冲区，选择器，支持 **多路复用** 的 IO 模型
             - java nio 包的 Seletor 类代码注释的第一句话就是 **多路复用**
         
-    * **[多路复用](#多路复用)**
-        ```
-        多个soclet 对应的文件描述符的I/O操作都能在一个线程内并发交替地顺序完成，这就叫I/O多路复用
-        也就是一次系统调用 可以处理多个 socket 的读写操作，返回哪些 socket 已经准备还读写
-        Linux下的select、poll和epoll就是干这个的。将用户socket对应的fd注册进epoll，
-        然后epoll帮你监听哪些socket上有消息到达，这样就避免了大量的无用操作。
-        此时的socket应该采用非阻塞模式
-        ```
+    * **[多路复用](#)**
         
-        - **[select](#select)**
+        - **[select](#)**
             - select 的机制
                 * 每次内核系统调用都要传入一个文件描述符的set (fd_set)，内核经过处理返回
                     已经准备好IO读写的文件描述符
@@ -133,10 +126,10 @@
                 * 1 每次系统调用 select，都需要传入 fd_set 参数
                 * 2 内核其实也是对 fd_set 遍历处理，fd_set 很大时，耗时
                 * 3 fd_set 大小是有限制的，最大 1024
-        - **[poll](#poll)**
+        - **[poll](#)**
             - 机制与 select 类似，知识通过改变 fd_set 的类型解决了 select 缺点中的第三个问题，
         
-        - **[epoll](#epoll)**
+        - **[epoll](#)**
             - epoll 的系统调用从一步变为三步，分别是 epoll_create(), epoll_ctl(), epoll_wait()
             - epoll_create() 
                 - 调用时内核会生成一个 epoll 对象
@@ -147,6 +140,8 @@
             - 只要有 socket 有对应的读写事件发生，会产生一个回调，把 rb_root 中的对应的socket 复制到 rdlist 中
             - epoll_wait()
                 - 调用时直接返回 rdlist 准备好读写的 socket 列表
+                
+            - **[nginx, redis, netty(linux)](#epoll)** 都是使用 epoll 模型的
     
 
 | **[对比项](#对比项)** | **[select](#select)** | **[poll](#poll)** | **[epoll](#epoll)** |
