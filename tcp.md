@@ -97,7 +97,14 @@
         new Socket(ip, port) 时对系统内核进行一个 socket syscall 系统调用，得到一个文件描述符，
         然后 socket 绑定地址，端口，socket 此时变成 listen 状态，调用 accept() （阻塞）
         方法才能知道有没有 客户端连接进入
+        
+        同一个端口的不同状态, listen established 分别对应的是2个不同的 socket
         ```
+- linux 服务器 socket 命令
+    * proc/pid/task  这个目录中有多少个文件就说明 这个pid有多少个线程
+    * proc/pid/fd    这个目录有多少个 socket 文件就是有多少个文件描述符
+    * netstat -natp  可以输出哪个pid,进程名字的 socket 端口状态
+    * nc localhost 8090 可以直接连接端口发送数据
 
 - IO 模型知识
 
@@ -136,7 +143,7 @@
                     - rb_root：存储所有 socket 的红黑树 
                     - rdlist：存储有读写事件的socket
             - epoll_ctl() 
-                - 调用时将所有 socket 添加到这个内存空间
+                - 调用时将所有 socket 添加到这个rb_root
             - 只要有 socket 有对应的读写事件发生，会产生一个回调，把 rb_root 中的对应的socket 复制到 rdlist 中
             - epoll_wait()
                 - 调用时直接返回 rdlist 准备好读写的 socket 列表
