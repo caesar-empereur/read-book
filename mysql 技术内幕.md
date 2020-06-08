@@ -15,7 +15,7 @@
   
 - innodb 存储引擎架构
 
-![innodb](https://raw.githubusercontent.com/caesar-empereur/read-book/master/photo/mysql/innodb.png)
+![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/innodb.png)
 
 
 ## 第 4 章 mysql 数据文件
