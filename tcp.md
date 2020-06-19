@@ -1,5 +1,7 @@
 - TCP 三次握手
 
+![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp握手.png)
+    - 
     - 为什么是3次，不是2次握手?
     
         * 简单的理解：2次握手相当于发送一次，对方确认并回复一次，发送方多一次确认的作用相当于，保证之前发出去的
