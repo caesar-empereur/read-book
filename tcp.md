@@ -1,7 +1,7 @@
-- TCP 三次握手
+- TCP 三次握手四次挥手
 
-![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp握手.png)
-    - 
+    - 3次握手
+    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp握手.png)
     - 为什么是3次，不是2次握手?
     
         * 简单的理解：2次握手相当于发送一次，对方确认并回复一次，发送方多一次确认的作用相当于，保证之前发出去的
@@ -10,7 +10,8 @@
             有一种是发送的 SYN 报文延迟了，连接都已经关闭了，这时候SYN才到达，如果不对这个
             SYN 做确认，会导致连接重新建立
             ```
-    
+    - 4次挥手
+    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp挥手.png)
     - 为什么不是4次握手？
         * 4次相当于 客户端发送一次，等待回复确认，服务端发送一次，等待回复确认
             ```
