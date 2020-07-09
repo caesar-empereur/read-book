@@ -33,7 +33,17 @@ linux才可以添加模块，windos 的nginx 是一个执行文件，添加不�
 windos nginx-1.19.0 版本测试过，把下面的配置文件复制过去，证书放好位置，直接启动访问是没问题的
 
 linux 的 nginx 如果没有ssl模块的话需要添加，执行下面的命令
-./configure --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module
+
+./configure --prefix=/home/base-service/nginx/compile/nginx-1.19.0 --pid-path=/home/base-service/nginx/compile/nginx-1.19.0/logs/nginx.pid --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module
+make
+make install
+
+
+openresty 安装
+wget https://openresty.org/download/openresty-1.15.8.3.tar.gz
+./configure --prefix=/home/base-service/nginx/compile/openresty-1.15.8.3 --with-luajit --without-http_redis2_module --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module --add-module=/home/base-service/nginx/modules/ngx_dynamic_upstream-0.1.6
+make
+make install
 ```
 
 - nginx 配置详细配置文件
