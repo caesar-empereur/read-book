@@ -3,8 +3,9 @@
 - 把 go 的镜像改成阿里云的
 ```
 go env -w GO111MODULE=on
-go env -w GOPROXY=https://goproxy.cn,direct
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 ```
+- goland 的 setting go modules 的 proxy 也要设置成跟上面一样的
 
 - go get 安装 github 上的依赖的时候，只需要进入项目的根目录
 
@@ -21,6 +22,8 @@ go env -w GOPROXY=https://goproxy.cn,direct
 - go get github.com/beego/bee
 - bee new project
 - go mod init 或者 go mod init project
+
+bee run -gendoc=true -downdoc=true
 ```
 采用 go mod 依赖管理模式
 ```
