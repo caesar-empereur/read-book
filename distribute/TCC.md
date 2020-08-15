@@ -8,7 +8,7 @@
 - 业务实现TCC服务之后，该TCC服务将作为分布式事务的其中一个资源，参与到整个分布式事务中 
     - 事务管理器分2阶段协调TCC服务，在第一阶段调用所有TCC服务的Try方法
     - 在第二阶段执行所有TCC服务的Confirm或者Cancel方法；
-![image.png](http://note.youdao.com/yws/res/7716/WEBRESOURCE1ff7ef6c6fa5d2fcb6305acfd78d55c2)
+![TCC](https://github.com/caesar-empereur/read-book/blob/master/photo/TCC.png)
 
 - 接入TCC 分布式事务的条件
     - 首先需要选择某种 TCC 分布式事务框架，各个服务里就会有这个 TCC 分布式事务框架在运行
@@ -27,7 +27,7 @@
 - 用户在实现TCC服务时，有以下注意事项
     - 接入TCC之后，需要考虑如何将其分成2阶段完成
         - 把资源的检查和预留放在一阶段的Try操作中进行，把真正的业务操作的执行放在二阶段的Confirm操作中进行；
-![image.png](http://note.youdao.com/yws/res/7737/WEBRESOURCE62f8cae5b6434993ee20ad508169eb1c)
+        ![tcc](https://github.com/caesar-empereur/read-book/blob/master/photo/tcc-service.png)
     - 允许空回滚
         - 事务协调器在调用TCC服务的一阶段Try操作时，可能会出现因为丢包而导致的网络超时
         - 此时事务协调器会触发二阶段回滚，调用TCC服务的Cancel操作。

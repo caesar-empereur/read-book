@@ -15,7 +15,7 @@
 - 组成：事务协调者与事务参与者（各种服务）
 - 2PC的流程
 
-![image.png](http://note.youdao.com/yws/res/7597/WEBRESOURCEec8b2afed587c4987e6125554efe0d57)
+![2pc](https://github.com/caesar-empereur/read-book/blob/master/photo/2pc.png)
 ### 2PC可能出现的问题
 2PC在执行过程中可能发生协调者或者参与者突然宕机的情况，在不同时期宕机可能有不同的现象
 
@@ -40,8 +40,7 @@
 最关键要解决的就是协调者和参与者同时挂掉导致数据不一致的问题，
 所以 3PC 把在 2PC 中又添加一个阶段，这样三阶段提交就有：CanCommit、PreCommit 和 DoCommit 三个阶段
 ```
-
-![1574496629(1).png](https://note.youdao.com/yws/res/7695/WEBRESOURCE71a8f30827aaece464a2eb03a2e9caea)
+![3pc](https://github.com/caesar-empereur/read-book/blob/master/photo/3pc.png)
 
 - 发送中断请求：
     - 协调者 向所有参与者节点发送 abort 请求；
