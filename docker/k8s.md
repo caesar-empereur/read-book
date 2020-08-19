@@ -61,3 +61,12 @@ Docker中有成百上千的容器需要启动，如果一个一个的启动那�
     - 但现实中有很多服务是有状态的，特别是一些复杂的中间件集群，mysql, mongodb, zookeeper, akka
     - 这些服务对应的Pod有特定的属性，固定id，规模稳定，有状态，需要持久化到磁盘
     - 因此定义 StatefulSet 的时候需要对应的Pod 也是有对用的特定的属性
+
+- **[Service](#)**
+    - Kubernetes里的每个Service其实就是我们经常提起的容器微服务架构中的一个微服务
+    - ![Service](https://github.com/caesar-empereur/read-book/blob/master/photo/k8s-service.png)
+    - Service定义了一个服务的访问入口，客户端访问service, 最终访问的是其中一个 Pod, **[这个负载均衡过程是由 kube-proxy 实现的](#)**
+    - RC  的作用是管理匹配的Pod的运行状态
+    - Service 的cluster ip是固定的，因此Pod 的创建销毁导致的Pod ip变化不会影响到service
+    - Pod ip变化导致的问题可以用 **[服务发现](#)** 解决，相当于Pod每次变化往 service 注册自己信息
+    - 
