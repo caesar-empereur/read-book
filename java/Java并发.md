@@ -3,7 +3,7 @@
 - **[join 方法目的是让调用该方法的线程先执行完，再到其他线程执行，让并发的执行变成串行的](#)**
 ```
 
-    hread  t1 = new Thread();
+    Thread  t1 = new Thread();
     Thread  t2 = new Thread();
     t1.start();
     t1.join(); // t1 执行完才轮到 t2 执行
@@ -29,6 +29,8 @@
     yield()从未导致线程转到等待/睡眠/阻塞状态。在大多数情况下，
     yield()将导致线程从运行状态转到可运行状态，但有可能没有效果
 ```
+
+- **[Object 的 wait(), notify(), join() 方法 都是 native 方法](#)**
 
 ### JAVA死锁
 ```
@@ -112,180 +114,3 @@
 ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/线程状态图.png)
 
 
-### ReentreenLock与Condition
-
-```
-private static final Lock LOCK = new ReentrantLock();//构造方法是有参数的，true 就是公平锁，false是非公平锁，默认是非公平
-private static final Condition CONDITION = LOCK.newCondition();
-
-LOCK.lock();
-try {	
-    // 1
-    CONDITION.await();//线程 释放锁之后进入休眠状态，让出CPU,不会往下执行了，需要等待通知唤醒
-    // 2
-} finally{
-    LOCK.unlock();
-}
-
-
-
-
-LOCK.lock();
-//进入这一步必须再次持有锁对象, ReentrantLock 这个名称也说明了可重入锁
-try {	
-    // 3
-    CONDITION.signal();//唤醒其他等待该条件的锁的线程
-    // 4
-} finally{
-    LOCK.unlock();
-}
-执行顺序：1-->3-->4-->2
-```
-
-- 生产者消费者模式
-```
-private static final Lock LOCK = new ReentrantLock();
-private static final Condition CONSUMER_CONDITION = LOCK.newCondition();
-private static final Condition PRODUCER_CONDITION = LOCK.newCondition();
-//消费者线程
-try {
-    LOCK.lock();
-    while (STORAGE == null) { // 仓库为空的时候不消费
-        CONSUMER_CONDITION.await();//执行到这里就释放锁，线程休眠，让出CPU
-    }
-    STORAGE = null; // 不为空的时候 消费，就是把值设置为 null
-    PRODUCER_CONDITION.signal();
-}
-finally {
-    LOCK.unlock();
-}
-//生产者线程
-try {
-    LOCK.lock();
-    while (STORAGE != null) { // 仓库有东西的时候不生产
-        PRODUCER_CONDITION.await();//执行到这里就释放锁，线程休眠，让出CPU
-    }
-    STORAGE = value; // 仓库为空的时候生产
-    CONSUMER_CONDITION.signal();
-}
-finally {
-    LOCK.unlock();
-}
-```
-
-- 公平锁，非公平锁
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/公平锁.png)
-
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/队列与同步器.png)
-
-
-- 队列同步器
-```
-public abstract class AbstractQueuedSynchronizer  extends AbstractOwnableSynchronizer{
-    protected final int getState() {	return state;  }
-    protected final void setState(int newState) {    state = newState; }
-    
-    protected final boolean compareAndSetState(int expect, int update) {
-        return unsafe.compareAndSwapInt(this, stateOffset, expect, update);
-    }
-}
-    同步器的主要使用方式是继承,子类通过覆盖3个方法来实现同步操作
-public class ReentrantLock implements Lock{
-    private final Sync sync;
-    abstract static class Sync extends AbstractQueuedSynchronizer
-}
-
-public class ThreadPoolExecutor extends AbstractExecutorService {
-    class Worker  extends AbstractQueuedSynchronizer  implements Runnable{
-        public void lock()        { acquire(1); 	//这里的参数1实际上没有用，方法是用 CAS(0,1) }
-        public void unlock()      { release(1); }
-    }
-}
-```
-
-```
-ReentrantLock
-Condition
-ReentrantReadWriteLock
-CountDownLatch 
-等并发类都是由这个队列同步器 AbstractQueuedSynchronizer 实现得
-```
-
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/同步器原理.png)
-
-- **[同步器依赖内部的同步队列（一个FIFO双向队列）来完成同步状态的管理](#)**
-```
-当前线程获取同步状态失败时，同步器会将当前
-线程以及等待状态等信息构造成为一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，
-会把首节点中的线程唤醒，使其再次尝试获取同步状态
-```
-
-
-### ThreadLocal
-
-```java
-public class ThreadLocal<T> {
-
-    public void set(T value) {
-        Thread thread = Thread.currentThread();
-        ThreadLocalMap  map =  thread.threadLocalMap;
-        if (map != null)
-            map.set(this, value);
-        else
-      thread.threadLocalMap = new ThreadLocalMap(this, value);
-    }
-    
-    public T get() {
-         Thread thread = Thread.currentThread();
-         ThreadLocalMap map = thread.threadLocalMap;
-         if (map != null) {
-            ThreadLocalMap.Entry e = map.getEntry(this);
-       if (e != null)   return (T)e.value;
-          }
-           T value = null;
-    if (map != null)
-        map.set(this, value);
-    else
-        thread.threadLocalMap = new ThreadLocalMap(this, value);
-    return value;
-    }
-}
-
-
-```
-
-```java
-class ThreadLocalMap {
-    private Entry[] table;
-    private int size = 0 , INITIAL_CAPACITY = 16;
-    
-    class Entry extends WeakReference<ThreadLocal<T>> {
-        Object value;
-    }
-    private void set(ThreadLocal<T> key, Object value) {
-    //根据 key 的哈希值算出 table 的下标, 新建一个节点放到这个下标, 节点包含 value
-    }
-    private Entry getEntry(ThreadLocal<T> key) {
-    //算出key在table的下标，确保该下表的节点的key 与这个key相等，返回节点
-    }
-}
-```
-
-- 原理
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/ThreadLocal.png)
-
-```
-key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key是同一个，是为了确保同一个key能
-把value覆盖掉，同一个key的原因是变量一直用的是为new 出来的同一个对象
-```
-
-- 内存泄漏问题
-```
-实际上 ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用，弱引用的特点是，如果这个对象只存在弱引用，
-那么在下一次垃圾回收的时候必然会被清理掉。
-所以如果 ThreadLocal 没有被外部强引用的情况下，在垃圾回收的时候会被清理掉的，这样一来 ThreadLocalMap中使用这个 
-ThreadLocal 的 key 也会被清理掉。但是，value 是强引用，不会被清理，这样一来就会出现 key 为 null 的 value。
-ThreadLocalMap实现中已经考虑了这种情况，在调用 set()、get()、remove() 方法的时候，会清理掉 key 为 null 的记录。
-如果说会出现内存泄漏，那只有在出现了 key 为 null 的记录后，没有手动调用 remove() 方法，
-并且之后也不再调用 get()、set()、remove() 方法的情况
-```
