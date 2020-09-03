@@ -178,14 +178,13 @@ CountDownLatch
 等并发类都是由这个队列同步器 AbstractQueuedSynchronizer 实现得
 ```
 
+- 公平锁，非公平锁
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/公平锁.png)
+
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/队列与同步器.png)
+
 - ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/同步器原理.png)
 
-- **[同步器依赖内部的同步队列（一个FIFO双向队列）来完成同步状态的管理](#)**
-```
-当前线程获取同步状态失败时，同步器会将当前
-线程以及等待状态等信息构造成为一个节点（Node）并将其加入同步队列，同时会阻塞当前线程，当同步状态释放时，
-会把首节点中的线程唤醒，使其再次尝试获取同步状态
-```
 
 - ReentrantLock 队列同步器锁的总结
     - 队列同步器的数据结构

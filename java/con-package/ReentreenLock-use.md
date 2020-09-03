@@ -59,9 +59,3 @@ finally {
 }
 ```
 
-- 公平锁，非公平锁
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/公平锁.png)
-
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/队列与同步器.png)
-
-
