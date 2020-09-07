@@ -98,35 +98,30 @@
 ![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/JVM-GC.png)
 
 - 2 gc 过程
-
-    - 对象优先在方法线程栈上分配内存空间，方法调用结束后栈帧弹出，内存自动释放，不需要回收对象
-    - 没有在栈上分配的则在 eden 区分配， eden 区空间不足会产生一次 minor gc
-    - 每次minor gc 时，把eden区，一个 survivor 区的垃圾回收，存活对象放到另一个survivor
-    - 在survivor 中每熬过一次gc，对象头的分代年龄加1，到了15次之后进入老年代
-    - old 空间不足会引发 major gc，full gc 是针对整个堆的 gc
-    
-    
-- 3 full gc 的触发条件
-
-    - old 空间不足，新生代转移过来的对象大于old剩余空间
-    - System.gc, 不一定会执行
-    - minor gc ，设置了空间分配担保，存活对象大小大于old剩余空间，也会触发
-
-- 4 pararell gc
-
-    - jdk1.8 默认是pararell gc 是使用复制算法的并行多线程收集器
-    - pararell 有 pararell scavenge gc 和 pararell old gc
-    - cms 是缩短停顿时间， pararell 是控制吞吐量，停顿时间短适合用户交互，pararell适合后台计算
-    
-- 5 CMS
-
-    - 初始标记-->并发标记-->重新标记-->并发清理
-    - 初始标记，重新标记需要stw,初始标记是按照根搜索找出到根对象没有引用链的对象
-    - 并发标记是与工作线程同时进行的，因此标记过程中工作线程会改变到根对象的引用链关系，
-      所以需要重新标记
-
+    - **[minor gc 触发条件](#)**
+        - 对象优先在方法线程栈上分配内存空间，方法调用结束后栈帧弹出，内存自动释放，不需要回收对象
+        - 没有在栈上分配的则在 eden 区分配， **[eden 区空间不足会产生一次 minor gc](#)**
+        - 每次minor gc 时，把eden区，一个 survivor 区的垃圾回收，存活对象放到另一个survivor
+        - 在survivor 中每熬过一次gc，对象头的分代年龄加1，到了15次之后进入老年代
+    - **[major gc 触发条件](#)**
+        - old 空间不足会引发 major gc，full gc 是针对整个堆的 gc
+    - **[full gc 的触发条件](#)**
+        - **[old 空间不足，新生代转移过来的对象大于old剩余空间](#)**
+        - System.gc, 不一定会执行
+        - minor gc ，设置了空间分配担保，存活对象大小大于old剩余空间，也会触发
+    - **[线上监控 gc 情况](#)**
+         - **[jstat -gc  pid  1000](#)** ，输出对应进程的gc情况，1秒钟打印一次
 - 6 常见的垃圾回收器
-
+    - 4 pararell gc
+        -  **[jdk1.8 默认是pararell gc](#)** 是使用复制算法的并行多线程收集器
+        - pararell 有 pararell scavenge gc 和 pararell old gc
+        - cms 是缩短停顿时间， pararell 是控制吞吐量，停顿时间短适合用户交互，pararell适合后台计算
+    - 5 **[CMS](#)**
+        - **[初始标记-->并发标记-->重新标记-->并发清理](#)**
+        - 初始标记，重新标记需要stw,初始标记是按照根搜索找出到根对象没有引用链的对象
+        - 并发标记是与工作线程同时进行的，因此标记过程中工作线程会改变到根对象的引用链关系，
+          所以需要重新标记
+          
 |类型    | 名字   |描述 |
 |:-----------:|:---:|-----------:|
 |       | Serial   |单线程GC，回收时必须暂停工作线程 |
@@ -139,8 +134,6 @@
 |老年代 | Serial Old    |Serial 的老年代版本，单线程，采用标记整理算法   |
 |       | Pararell old   |  Pararell的老年代版本，多线程，采用标记整理算法  |
 
-
-    
 ### JVM 调优参数
 
 - 1 打印 JVM 得所有参数，大概有几百个
@@ -168,37 +161,43 @@
     - 其他配置参数
         * -XX:+HeapDumpOnOutOfMemoryError 发生内存溢出时导出堆内存现场
         * -XX:HeapDumpPath=/usr/heap.hprof 文件可以通过JVisiaulVM工具查看分析
-
+- 4 **[什么时候需要 Jvm 调优](#)**
+    - **[Jvm调优是调什么？](#)**
+        - 内存空间的分配设置
+        - 选择合适的垃圾回收器
+    - 即便是每秒上百万的请求数，调优也不是那么重要, JVM本身就是为这种高并发大吞吐的服务设计的
+    - 一般项目加个xms和xmx参数就够了，没有全面的监控收集之前调优，就是瞎几把调
+    - 很多大厂的云平台是高度定制的，发布时会在容器中自动预设好参数，基本不需要改
+    - 最新版本的回收器 Shenandoah GC 不用手动设置参数下几乎可以达到最优
 ### JVM 常用命令
 - jps 查看当前所有 java 进程的 pid
     - jps
 
-- jmap  查看堆内存的信息
-    - jmap -heap pid （打印进程为 pid 的堆的使用信息，输出结果为）
+- **[jmap 查看堆内存的信息](#)**
+    - **[jmap -heap pid](#)**（打印进程为 pid 的堆的使用信息，输出结果为）
         * young generation 大小与已使用比例
             * Eden
             * From Space (就是 survivor)
             * To Space (就是 survivor)
         * old generation 大小与已使用比例
-        
-    - jmap -histo pid  （输出 pid 的JVM进程的所有对象的信）
+    - **[jmap -histo pid](#)**（输出 pid 的JVM进程的所有对象的信）
     - jmap -histo pid | head -20  (输出前20个实例化最多的对象的信息)
-    - jmap -dump:file=/home/heap.hprof pid (堆信息转储到文件，下载后用 VisiaulVM 分析)
+    - **[jmap -dump:file=/home/heap.hprof pid](#)**(堆信息转储到文件，下载后用 VisiaulVM 分析)
     
 ```
 jmap 命令把整个 JVM 的工作线程停止 full gc，在线上是不能随便使用的，特别是堆设置的特别大的时候，
 完成这个转储蓄需要一定时间，因此在高可用环境可使用，或者加上 HeapDumpOnOutOfMemoryError
 ```
     
-- jstack 查看JVM线程的运行状况
+- **[jstack 查看JVM线程的运行状况](#)**
     - jstack pid  命令行输出
-    - jstack pid >/home/thread.log  转储到文件
+    - **[jstack pid >/home/thread.log 转储到文件](#)**
     - 常用于排除死锁的情况
     
 - jstat 查看JVM 资源使用，性能，GC 情况
     - jstat -class pid 查看已经加载的类
-    - jstat -gc pid  查看当前堆中各个区域的使用情况，GC情况
-    - jstat -gcutil pid  查看当前GC情况
+    - **[jstat -gc pid](#)** 查看当前堆中各个区域的使用情况，GC情况
+    - jstat -gcutil pid 查看当前GC情况
 
 - jinfo  查看JVM 配置的参数
     - jinfo pid 最小最大堆的参数，新生代，老年代，eden, survivor 的各种配置参数
