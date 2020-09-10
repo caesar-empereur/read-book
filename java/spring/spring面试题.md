@@ -65,7 +65,7 @@ public class B {
     - 过程如下
         - 首先Spring尝试通过ApplicationContext.getBean()方法获取A对象的实例,发现没有，就创建A
         - 发现A依赖了B，递归调用 getBean() 方法获取B，发现B没有，创建B
-        - 此时A，B对象都有了(半成品)，但是还没有属性赋值
+        - *[此时A，B对象都有了(半成品)，但是还没有属性赋值]()**
         - 创建B的时候发现依赖了A，A实例已经有了，因此A返回，B的属性A就设置进去
         - B实例和它的属性弄完之后到了A，A 属性依赖B，就去 getBean()把B拿出来设置到A里面
-        - A，B 对象在半成品的时候，其实是一个 ObjectFactory 对象
+        - A，B 对象在 **[半成品]()** 的时候，其实是一个 ObjectFactory 对象
