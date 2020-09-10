@@ -4,13 +4,18 @@
     - 实现了orm，dao, 例如JPA, jdbc
     - 事务管理
     - 面向切面的编程(AOP)
-- 什么是Spring的依赖注入？
-    - 不用创建对象，而只需要描述它如何被创建，以及在那些地方需要使用这些对象
+- 什么是Spring的控制反转与依赖注入？
+    - **[依赖注入是从应用程序的角度在描述]()**，应用程序依赖容器创建并注入它所需要的外部资源
+    - **[而控制反转是从容器的角度在描述]()**，由容器反向的向应用程序注入应用程序所需要的外部资源
+- Spring框架的IOC是怎么样的?
+    - BeanFactory，ApplicationContext 等容器是IOC框架的基础
+    - BeanFactory是Spring IoC容器真实展现,负责管理各种bean
 - 有哪些不同类型的依赖注入方式？
     - 构造器依赖注入
     - Setter方法注入
-- Spring Bean的作用域有哪些?
-    - 单例singleton
+    - 接口注入
+- Spring Bean的 **[作用域]()** (运行模式)有哪些?
+    - **[单例 singleton]()**
         - 默认情况下都是单例的，它要求在每个spring 容器内不论你请求多少次这个实例，都只有一个实例
         - 单例特性是由beanfactory本身维护的
     - **[单例bean是线程安全的吗?]()**
@@ -18,9 +23,9 @@
         - 而实际上,大多数spring bean没有可变状态(例如服务和DAO的类),这样的话本身是线程安全的
         - 如果您的bean有可变状态(例如视图模型对象),这就需要你来确保线程安全
         - 解决方案是改变bean Scope，可变的bean从“单例”到“原型”
-    - 原型prototype
+    - **[原型 prototype]()**
         - 这个bean的实例和单例相反,一个新的请求产生一个新的bean实例
-    - 请求request
+    - **[请求 request]()**
         - 在一个请求内,将会为每个web请求的客户端创建一个新的bean实例
         - 一旦请求完成后,bean将失效，然后被垃圾收集器回收掉
 - spring不同的bean自动注入模式?
@@ -69,3 +74,70 @@ public class B {
         - 创建B的时候发现依赖了A，A实例已经有了，因此A返回，B的属性A就设置进去
         - B实例和它的属性弄完之后到了A，A 属性依赖B，就去 getBean()把B拿出来设置到A里面
         - A，B 对象在 **[半成品]()** 的时候，其实是一个 ObjectFactory 对象
+- ioc容器有几种类型？
+    - beanfactory 和 applicationcontext.
+- beanfactory和applicationcontext有什么区别？
+    - beanfactory是基本容器，而applicationcontext是高级容器。Applicationcontext是扩展了beanfactory的接口
+    - beanfactory 的bean 是懒加载实例化，获取的时候发现没有才会实例化，Applicationcontext是启动完就会实例化
+- 构造器注入和 set 注入的区别是什么?
+    - 构造器注入没有部分注入。set允许部分注入
+    - 如果有任何修改构造器会创建一个新实例。如果属性改变设置器并不会创建一个新实例
+    - 构造器适合用于有非常多的属性的情况。设置器适合属性比较少的情况
+- spring 事务机制与实现
+    - 事务最重要的两个特性，是事务的传播级别和数据隔离级别。
+        - 传播级别定义的是事务的控制范围
+        - 事务隔离级别定义的是事务在数据库读写方面的控制范围
+        
+    - spring 定义的是事务的传播级别，隔离级别是在数据库实现的，spring 的事务本质上是以来数据库的事务的
+    
+    - spring的事务传播行为
+    ```
+    传播行为怎么理解？
+    最直接的体现就是代码里面，A 方法加了事务注解(指定一个传播级别)，A方法里面调用了B方法
+    B方法也加了事务注解，这就是有多个事务的体现，传播级别就是定义这些事务之间是如何影响的
+    ```
+    - 事务的几种传播级别
+        - REQUIRED：如果当前没有事务，就创建一个新事务，如果当前存在事务，就加入该事务，该设置是最常用的设置
+        - SUPPORTS：支持当前事务，如果当前存在事务，就加入该事务，如果当前不存在事务，就以非事务执行
+        - REQUIRES_NEW：创建新事务，无论当前存不存在事务，都创建新事务
+        - NEVER：以非事务方式执行，如果当前存在事务，则抛出异常
+
+```
+public class Service {
+    @Override
+    @Transactional
+    public void createUser(String name) {
+        jdbcTemplate.update("INSERT INTO `user` (name) VALUES(?)", name);
+        addAccount(name, 10000);
+        throw new RuntimeException("");
+    }
+    /*
+    addAccount()方法的事务是不会起作用的，同一个类的 A 方法调用 B 方法，A B 都有事务
+    B 的事务是不会起作用的，因为spring的事务用的是JDK动态代理，动态代理的目标里面调用本类的方法
+    是不会走代理的
+    */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addAccount(String name, int initMoney) {
+        String accountid = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        jdbcTemplate.update("insert INTO account (accountName,user,money) VALUES (?,?,?)", accountid, name, initMoney);
+    }
+}
+```
+
+```
+public class Service {
+    @Transactional
+    public void createUser(String name) {
+        jdbcTemplate.update("INSERT INTO `user` (name) VALUES(?)", name);
+        // 暴露proxy 对象 调用accountService添加帐户
+        ((UserSerivce) AopContext.currentProxy()).addAccount(name, 10000);
+        // 人为报错
+        throw new RuntimeException("");
+    ｝
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void addAccount(String name, int initMoney) {
+        String accountid = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        jdbcTemplate.update("insert INTO account (accountName,user,money) VALUES (?,?,?)", accountid, name, initMoney);
+    }
+}
+```
