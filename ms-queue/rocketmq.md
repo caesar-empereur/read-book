@@ -53,4 +53,5 @@
         - 4 上线多台消费端，消费临时topic 的消息
         - 改方案的解决目的是临时把消息的堆积转移到其他Broker,不然一个上线多个有问题的消费端本身就是问题
 - rocketMq事务消息
-    - 
+    - ![rocketmq事务消息](https://github.com/caesar-empereur/read-book/blob/master/photo/rocketmq事务消息.png)
+
