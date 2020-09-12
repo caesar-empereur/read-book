@@ -38,7 +38,7 @@
                 * 2 内核其实也是对 fd_set 遍历处理，fd_set 很大时，耗时
                 * 3 fd_set 大小是有限制的，最大 1024
         - **[poll](#)**
-            - 机制与 select 类似，知识通过改变 fd_set 的类型解决了 select 缺点中的第三个问题，
+            - 机制与 select 类似，只是通过改变 fd_set 的类型解决了 select 缺点中的第三个问题
         
         - **[epoll](#)**
             - epoll 的系统调用从一步变为2步，分别是 epoll_create(),  epoll_wait()
