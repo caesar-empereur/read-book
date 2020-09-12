@@ -85,7 +85,11 @@
       |t3 |select * from table_a where a=2 for update|'|
       |t4 |'|select * from table_a where a=1 for update|
       |t5 |'|error, deadlock|
-      
+   * **[死锁排查](#)**
+      * 查询是否锁表：show OPEN TABLES where In_use > 0;
+      * 查看正在锁的事务：SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCKS; 
+      * 查看锁阻塞线程信息：show processlist， 查询到相对应的查询线程id，然后 kill id
+      * 查看当前存储引擎的状态： show engine innodb status，包括事务，锁
 ## 第 7 章
 
 * 事务的特性
