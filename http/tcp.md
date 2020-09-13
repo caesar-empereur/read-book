@@ -13,6 +13,8 @@
     - 3次握手
     ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp握手.png)
     
+    - 三次握手过程中可以携带数据吗？
+        - 第三次握手是可以携带数据的，而前两次不行
     - 为什么不是4次握手？
         - 4次相当于 客户端发送一次，等待回复确认，服务端发送一次，等待回复确认
                 ```
