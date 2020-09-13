@@ -5,6 +5,8 @@
     * 同一个端口的不同状态, listen established 分别对应的是2个不同的 socket
     * **[new Socket(ip, port)](#)** 时对内核进行一个syscall系统调用, **[返回一个文件描述符](#)**, 状态是 listen
     * 服务端的 socket 不断的调用 **[socket.accept()](#)** 方法(阻塞)，**[有客户端连进来时该方法会返回一个 socket](#)**
+    * 服务端调用 accept 时，连接成功了会返回一个已完成连接的 socket，后续用来传输数据
+    * 监听的 socket 和用来传送数据的 socket，是两个socket，一个叫监听 socket，一个叫已完成连接 socket
 - **[linux socket 查看某个端口的 socket 连接](#)**
     - **[lsof -i:9090](#)** 查看一个端口的pid和socket情况
     - 找到 pid，定位到 **[proc/pid/fd](#)** 目录下查看有多少个 fd 文件
