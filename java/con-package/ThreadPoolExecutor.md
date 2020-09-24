@@ -4,6 +4,8 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 private final AtomicInteger atomicInteger = new AtomicInteger(-567870912);
 private final BlockingQueue<Runnable> workQueue;
 private final ReentrantLock mainLock = new ReentrantLock();
+
+//线程池核心，所有的运行的线程都存在这个 set 集合里面
 private final HashSet<Worker> workers = new HashSet<Worker>();
 private final Condition termination = mainLock.newCondition();
 private volatile ThreadFactory threadFactory;
@@ -12,23 +14,24 @@ private volatile boolean allowCoreThreadTimeOut;
 private volatile int corePoolSize, int maximumPoolSize, long keepAliveTime;
 
 public void execute(Runnable command) {
-int c = atomicInteger.get();	//c=-567870912
-if (workerCountOf(c) < corePoolSize) { // 1当前池中线程数量少于核心线程数，新建线程执行任务
-    if (addWorker(command, true))
+    int c = atomicInteger.get();	//c=-567870912
+    if (workerCountOf(c) < corePoolSize) { // 1当前池中线程数量少于核心线程数，新建线程执行任务
+        if (addWorker(command, true))
+            return;
+        c = atomicInteger.get();
+    }
+    if (isRunning(c) && workQueue.offer(command)) { // 2.核心池已满，但任务队列未满，添加到队列中
+        int recheck = atomicInteger.get();
+        if (!isRunning(recheck) && remove(command))
+            reject(command);
+        if (workerCountOf(recheck) == 0)
+            addWorker(null, false);
         return;
-    c = atomicInteger.get();
-}
-if (isRunning(c) && workQueue.offer(command)) { // 2.核心池已满，但任务队列未满，添加到队列中
-    int recheck = atomicInteger.get();
-    if (! isRunning(recheck) && remove(command))
+    }
+    if (!addWorker(command, false)) //3.核心池已满，队列已满，试着创建一个新线程
+        //如果创建新线程失败了，说明线程池被关闭或者线程池完全满了，拒绝任务
         reject(command);
-    if (workerCountOf(recheck) == 0)
-        addWorker(null, false);
-    return;
-}
-if (!addWorker(command, false)) //3.核心池已满，队列已满，试着创建一个新线程
-    //如果创建新线程失败了，说明线程池被关闭或者线程池完全满了，拒绝任务
-    reject(command);
+    }
 }
 
 private boolean addWorker(Runnable firstTask, boolean core) {
@@ -36,7 +39,7 @@ private boolean addWorker(Runnable firstTask, boolean core) {
     for (;;) {
         int c = atomicInteger.get();
         int rs = runStateOf(c);
-  //线程池是停止状态并且队列不为空，加入的线程任务为空，则返回执行不成功
+        //线程池是停止状态并且队列不为空，加入的线程任务为空，则返回执行不成功
         if (rs >= SHUTDOWN && ! (rs == SHUTDOWN && firstTask == null && ! workQueue.isEmpty()))
             return false;
         for (;;) { //自旋锁的应用
@@ -139,3 +142,9 @@ public interface ScheduledExecutorService extends ExecutorService {
     ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit);
 }
 ```
+- 线程池原理总结
+    - 提交线程执行，如果当前运行的线程大于核心线程数，队列未满，则添加到队列
+    - 如果小于核心线程数，则添加线程执行任务
+        - 自旋中对原子类 CAS 置换，成功将当前线程封装为一个结点添加到 set 集合中
+        - 添加到 set 集合的代码块是用同步锁包住的
+    - 如果核心线程数满了，队列也满了，尝试添加线程到 set 集合中，失败则拒绝
