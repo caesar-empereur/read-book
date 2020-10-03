@@ -228,9 +228,9 @@ jmap 命令把整个 JVM 的工作线程停止 full gc，在线上是不能随�
     - jinfo pid 最小最大堆的参数，新生代，老年代，eden, survivor 的各种配置参数
 
 
-### JVM 常见线上错误与排查方法
+### 什么时候会产生OOM?
 
-- OutOfMemoryError: **GC overhead limit exceeded**
+- OutOfMemoryError: **[GC overhead limit exceeded 垃圾回收太频繁](#)**
     * 原因：程序基本上耗尽了所有的可用内存, GC也清理不了
     * 表现：GC花费的时间超过 98%, 并且GC回收的内存少于 2%
     
@@ -240,7 +240,7 @@ jmap 命令把整个 JVM 的工作线程停止 full gc，在线上是不能随�
         * 3 排查产生较多对象的代码的逻辑，对该方法调试压测
         * 4 本地代码复现，程序本地运行压测，用 Visual GC 工具查看 GC 情况
 
-- OutOfMemoryError: **Java heap space**
+- OutOfMemoryError: **[Java heap space 堆内存溢出](#)**
     * 堆内存中的空间不足以存放新创建的对象，就会抛出该异常
     * 堆内存使用量达到最大内存限制, 就会抛出该异常
     * 原因：堆中内存占用太多，没有被清理掉
@@ -250,4 +250,21 @@ jmap 命令把整个 JVM 的工作线程停止 full gc，在线上是不能随�
         * 2 堆设置大一点有可能只是推迟这个错误的发生，代码有问题迟早会有这个问题爆发的
         * 3 本质上也是有些类的对象创建太多，占用内存，没有被清理，方式跟上面的一样
     
+- OutOfMemoryError: **[Metaspace 运行时常量池和元空间溢出](#)**
+    ```
+    private static String str = "test";
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>();
+        while (true){
+            String str2 = str + str;
+            str = str2;
+            list.add(str.intern());
+        }
+    }
+    ```
+    - JDK 1.8之后的字符串常量池是存放在元空间的
 
+- **[StackOverFlow 栈内存溢出](#)**
+    - 方法出现递归调用，递归没有出口时会出现
+    - 线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowError异常
+        - 栈是线程私有，它的生命周期和线程相同
