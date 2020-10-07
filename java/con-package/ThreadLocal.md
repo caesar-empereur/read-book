@@ -1,37 +1,41 @@
 ### ThreadLocal
 
-```java
+```
 public class ThreadLocal<T> {
 
     public void set(T value) {
         Thread thread = Thread.currentThread();
         ThreadLocalMap  map =  thread.threadLocalMap;
-        if (map != null)
+        if (map != null) {
             map.set(this, value);
-        else
-      thread.threadLocalMap = new ThreadLocalMap(this, value);
+        }
+        else {
+            thread.threadLocalMap = new ThreadLocalMap(this, value);
+        }
     }
     
     public T get() {
          Thread thread = Thread.currentThread();
          ThreadLocalMap map = thread.threadLocalMap;
          if (map != null) {
-            ThreadLocalMap.Entry e = map.getEntry(this);
-       if (e != null)   return (T)e.value;
-          }
-           T value = null;
-    if (map != null)
-        map.set(this, value);
-    else
-        thread.threadLocalMap = new ThreadLocalMap(this, value);
-    return value;
+             ThreadLocalMap.Entry e = map.getEntry(this);
+             if (e != null) {
+                  return (T)e.value;
+             }
+         }
+         T value = null;
+         if (map != null)
+            map.set(this, value);
+         else
+            thread.threadLocalMap = new ThreadLocalMap(this, value);
+        return value;
     }
 }
 
 
 ```
 
-```java
+```
 class ThreadLocalMap {
     private Entry[] table;
     private int size = 0 , INITIAL_CAPACITY = 16;
@@ -40,10 +44,10 @@ class ThreadLocalMap {
         Object value;
     }
     private void set(ThreadLocal<T> key, Object value) {
-    //根据 key 的哈希值算出 table 的下标, 新建一个节点放到这个下标, 节点包含 value
+        //根据 key 的哈希值算出 table 的下标, 新建一个节点放到这个下标, 节点包含 value
     }
     private Entry getEntry(ThreadLocal<T> key) {
-    //算出key在table的下标，确保该下表的节点的key 与这个key相等，返回节点
+        //算出key在table的下标，确保该下表的节点的key 与这个key相等，返回节点
     }
 }
 ```
