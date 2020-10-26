@@ -179,11 +179,11 @@ CountDownLatch
 ```
 
 - 公平锁，非公平锁
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/公平锁.png)
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/公平锁.png)
 
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/队列与同步器.png)
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/队列与同步器.png)
 
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/同步器原理.png)
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/同步器原理.png)
 
 
 - ReentrantLock 队列同步器锁的总结
