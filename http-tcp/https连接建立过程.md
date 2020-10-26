@@ -1,5 +1,5 @@
 - https 连接建立的过程
-![https](https://github.com/caesar-empereur/read-book/blob/master/photo/https.png)
+![https](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp/https.png)
 
 - **[websocket 协议的升级过程](#)**
     - WebSocket复用了HTTP的握手通道。具体指的是，客户端通过HTTP请求与WebSocket服务端协商升级协议

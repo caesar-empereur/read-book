@@ -1,5 +1,5 @@
 - TCP IP 分层模型
-    ![tcp分层](https://github.com/caesar-empereur/read-book/blob/master/photo//tcp/tcp分层.png)
+    ![tcp分层](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp/tcp分层.png)
 - TCP 是面向连接的、可靠的、**[基于字节流](#)**的传输层通信协议。
     - 面向连接：一定是「一对一」才能连接，发送数据之前需要建立点对点的连接
     - 可靠的：无论的网络链路中出现了怎样的链路变化，TCP 都可以保证一个报文一定能够到达接收端
@@ -13,7 +13,7 @@
 - TCP 三次握手四次挥手
 
     - 3次握手
-    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp握手.png)
+    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo//tcp/tcp握手.png)
     
     - 三次握手过程中可以携带数据吗？
         - 第三次握手是可以携带数据的，而前两次不行
@@ -32,7 +32,7 @@
             - 网络环境是复杂的，不是先发就先到达，先发的可能后到达
             - 每次建立连接发送的 SYNC,ACK报文都是带有序列号的，用来判断上下文(因为多次交互)确定是否为历史连接
             - **[客户端才会判断上下文，服务端是不知道一个发过来的SYN是不是历史连接的](#)**
-            ![tcp握手历史连接](https://github.com/caesar-empereur/read-book/blob/master/photo//tcp/tcp握手历史连接.png)
+            ![tcp握手历史连接](https://github.com/caesar-empereur/read-book/blob/master/photo/tcp/tcp握手历史连接.png)
 
             ```
             客户端第一次发送 SYNC, 序号是90，很久也没收到回复，可能是服务端收到了，但回复报文拥堵了

@@ -15,7 +15,7 @@
   
 - innodb 存储引擎架构
 
-![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/innodb.png)
+![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/innodb.png)
 
 ## 第 4 章 mysql 数据文件
 
@@ -28,7 +28,7 @@
 
  * 树的数据结构
    - 普通二叉树，平衡二叉树，红黑树为什么不适合做文件索引？
-   ![普通二叉树索引](https://github.com/caesar-empereur/read-book/blob/master/photo/普通二叉树索引.png)
+   ![普通二叉树索引](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/普通二叉树索引.png)
    
    * **[如果用平衡二叉树，红黑树来构建索引的话，当数据多的时候，树的深度很大，按照每个树节点只能存一个key,行记录](#)**
    - **[这样在要经过多次磁盘的IO访问，性能相当低，因此这种树结构知识和内存和小文件](#)**
@@ -37,7 +37,7 @@
  * B 树分为 **[B-树](#)**，**[B+树](#)**，但都是 **[多路平衡查找](#)** 的树结构
    * **[B-树](#)** 的一个重要特点是 **[非叶子节点也会存储数据](#)**
       - B-树索引的特点是非叶子结点也会存储数据,也就是每个节点的多个key都是有对应的行的主键以及行记录
-        ![B-树索引](https://github.com/caesar-empereur/read-book/blob/master/photo/B-树索引.png)
+        ![B-树索引](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/B-树索引.png)
    * **[B+树](#)** 的一个重要特点是 **[只有叶子节点会存储数据](#)**，所有叶子节点通过链指针形成 **[排序链表](#)**
       - **[为什么B+树设计成只有叶子节点存数据？](#)**
           - 非叶子结点不存储数据，那么就会存储更多的键值，相应的树的阶数（节点的子节点树）就会更大，树就会更矮更胖
@@ -46,7 +46,7 @@
       - 索引页文件的大小是16KB,按照每页(每个树结点)能存储1000个key和1000个指针
       - 只需要B树的深度为3，就可以通过索引文件维护 1000*1000*1000=10亿行记录
       - 只需要2到4次磁盘IO就能定位到某一行，而且B树根结点是常驻内存的
-    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/B+树索引新.png)
+    ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/B+树索引新.png)
  * 聚集索引 与 非聚集索引
   
   |索引类型 | 定义 |叶子节点存储的东西 | 定位方式 |
@@ -215,11 +215,11 @@
        然后使用当前记录的 DB_ROLL_PTR 指向 und olog。
        这样 MySQL 就可以通过 DB_ROLL_PTR 找到 undolog 推导出之前版本记录内容
        ```
-       ![mysql-mvcc](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql-mvcc.png)
+       ![mysql-mvcc](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/mysql-mvcc.png)
        - **[当前读于快照读](#)**
            - 快照读相当于 select 操作会去查找 undo log 中的版本链的上一个记录
            - **[当前读会读取一行记录当前的最新的已经提交的事务对应的数据](#)**
-           ![mysql当前于快照读](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql当前与快照读.png)
+           ![mysql当前于快照读](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/mysql当前与快照读.png)
 
 - purge
 
