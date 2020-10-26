@@ -6,7 +6,7 @@
         * 虚拟机栈
     - 方法区
     - 程序计数器
-![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/Jvm内存布局.png)
+![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/jvm/Jvm内存布局.png)
 
 - 2 **[对象的创建过程](#)**
     - new 指令时，检查对象的类是否已经加载，没有则先加载类
@@ -54,7 +54,7 @@
             - 常量引用的对象
             - 虚拟机栈中引用的对象
 
-![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/对象的访问定位.png)
+![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/jvm/对象的访问定位.png)
 
 - 5 **[类的加载过程](#)**  （通过类名加载class文件到JVM内存，生成Class对象）
     - 1 加载
@@ -108,7 +108,7 @@
         - 2个survivor 区，各10%
     - old 老年代
     - metaspace (1.8之后代替永久区)
-![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/JVM-GC.png)
+![jvm](https://github.com/caesar-empereur/read-book/blob/master/photo/jvm/JVM-GC.png)
 
 - 2 **[常见的垃圾回收算法](#)**
     - **[标记清除算法](#)**
