@@ -53,7 +53,7 @@ class ThreadLocalMap {
 ```
 
 - 原理
-- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/ThreadLocal.png)
+- ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/ThreadLocal.png)
 
 ```
 key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key是同一个，是为了确保同一个key能
