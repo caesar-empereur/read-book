@@ -32,7 +32,7 @@
     - 削峰
 
 - **[rocketmq架构]()**
-![rocketmq](https://github.com/caesar-empereur/read-book/blob/master/photo/rocketmq.png)
+![rocketmq](https://github.com/caesar-empereur/read-book/blob/master/photo/mq/rocketmq.png)
 
     - NameServer
         - 可以理解为是消息队列的协调者，Broker向它注册路由信息，同时Client向其获取路由信息
@@ -72,6 +72,21 @@
     这样的顺序，在发消息的时候可以降订单号做哈希之类的处理，然后实现 QueueSelector 接口，将该订单号的消息永远
     都只发送到一个队列里面
     ```
+- **[RocketMQ 的延时消息是如何实现的？]()**
+    - 延时消息的使用
+        - 开源RocketMQ支持延迟消息，默认支持18个level的延迟消息(1s 5s 10s 30s 1m 2m 3m 4m.... 1h 2h)
+        - msg.setDelayTimeLevel(2);
+        - Broker在启动时，内部会创建一个内部主题：SCHEDULE_TOPIC_XXXX，根据延迟18个level对应了18个队列
+        - 延时消息不支持秒级精度，是为了避免在broker对消息进行排序，造成性能影响
+    - 延时消息内部实现机制
+        - 消息进来在CommitLog中判断是延时消息会修改消息Topic名称和队列信息为延时topic和延时队列
+        - CommitLog中转发消息到延迟主题的CosumeQueue中
+        - 延迟服务消费SCHEDULE_TOPIC_XXXX消息，并且启动定时计算
+        - 延时服务判断到时间一到就将信息重新存储到CommitLog中
+        - CommitLog中将消息投递到目标Topic，队列中
+        - 消费者消费目标topic中的数据
+    - ![rocketmq事务消息](https://github.com/caesar-empereur/read-book/blob/master/photo/mq/rocketmq延时消息.png)
+
     
 - 如何保证消息不被重复消费？
     - 消息为什么会出现重复？
@@ -110,5 +125,5 @@
         - 4 上线多台消费端，消费临时topic 的消息
         - 改方案的解决目的是临时把消息的堆积转移到其他Broker,不然一个上线多个有问题的消费端本身就是问题
 - rocketMq事务消息
-    - ![rocketmq事务消息](https://github.com/caesar-empereur/read-book/blob/master/photo/rocketmq事务消息.png)
+    - ![rocketmq事务消息](https://github.com/caesar-empereur/read-book/blob/master/photo/mq/rocketmq事务消息.png)
 
