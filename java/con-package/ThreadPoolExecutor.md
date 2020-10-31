@@ -112,7 +112,6 @@ private void runWorker(Worker w) {
 
 - ThreadPoolExecutor 参数解释
 ```
-
 corePoolSize：         核心线程数，会一直存活，即使没有任务，线程池也会维护线程的最少数量
 maximumPoolSize： 线程池维护线程的最大数量
 keepAliveTime：      线程池维护线程所允许的空闲时间，当线程空闲时间达到keepAliveTime，该线程会退出，直到线程数量等于corePoolSize。
@@ -143,8 +142,7 @@ public interface ScheduledExecutorService extends ExecutorService {
 }
 ```
 - 线程池原理总结
-    - 提交线程执行，如果当前运行的线程大于核心线程数，队列未满，则添加到队列
-    - 如果小于核心线程数，则添加线程执行任务
-        - 自旋中对原子类 CAS 置换，成功将当前线程封装为一个结点添加到 set 集合中
-        - 添加到 set 集合的代码块是用同步锁包住的
-    - 如果核心线程数满了，队列也满了，尝试添加线程到 set 集合中，失败则拒绝
+    - JDK 线程池中如果核心线程数已经满了的话，那么后面再来的请求都是放到阻塞队列里面去
+    - 阻塞队列再满了，才会启用最大线程数
+    ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/ThreadPoolExecutor.png)
+
