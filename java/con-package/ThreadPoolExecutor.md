@@ -148,7 +148,7 @@ public interface ScheduledExecutorService extends ExecutorService {
         - 降低资源消耗：通过池化技术重复利用已创建的线程，降低线程创建和销毁造成的损耗
         - 提高线程的可管理性：线程是稀缺资源,频繁申请/销毁资源和调度资源，将带来额外的消耗，可能会非常巨大
         - 提供更多更强大的功能：线程池具备可拓展性,比如延时定时线程池ScheduledThreadPoolExecutor
-    - 线程池的任务与线程管理的机制
+    - **[线程池的任务与线程管理的机制](#)**
         - 线程池在内部实际上构建了一个生产者消费者模型，将线程和任务两者解耦，从而良好的缓冲任务，复用线程
         - **[线程池的运行主要分为3个核心要素](#)**
             - **[线程池自身的状态管理](#)**
@@ -173,3 +173,7 @@ public interface ScheduledExecutorService extends ExecutorService {
             - Worker是通过继承AQS，使用AQS来实现独占锁这个功能。没有使用可重入锁ReentrantLock
             - 使用AQS，为的就是实现不可重入的特性去反应线程现在的执行状态
             - lock方法一旦获取了独占锁，表示当前线程正在执行任务中
+        - **[线程池的异常时如何处理的？](#)**
+            - 准确的描述是线程池中抛出了一个没有 try catch 的异常会怎么处理？
+            - 调用 execute 方法提交线程时，异常信息会输出
+            - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
