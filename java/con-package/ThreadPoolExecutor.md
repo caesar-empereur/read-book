@@ -141,8 +141,9 @@ public interface ScheduledExecutorService extends ExecutorService {
     ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit);
 }
 ```
-- 线程池原理总结
+- JDK线程池原理总结
     - JDK 线程池中如果核心线程数已经满了的话，那么后面再来的请求都是放到阻塞队列里面去
     - 阻塞队列再满了，才会启用最大线程数
+    - 这种是有点反常识的，因为认知里面是觉得最大线程数用完了才会使用加入到队列里面
     ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/ThreadPoolExecutor.png)
 
