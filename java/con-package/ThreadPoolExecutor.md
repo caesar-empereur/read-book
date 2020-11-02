@@ -177,3 +177,5 @@ public interface ScheduledExecutorService extends ExecutorService {
             - 准确的描述是线程池中抛出了一个没有 try catch 的异常会怎么处理？
             - 调用 execute 方法提交线程时，异常信息会输出
             - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
+    - tomcat 线程池的特点与jdk线程池的区别
+    ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
