@@ -94,13 +94,15 @@ private void runWorker(Worker w) {
     try {
          //如果传进来的worker线程是空的，则从队列中拿出线程执行
         while (task != null || (task = getTask()) != null) {
-            //规定时间内没有拿到线程，说明队列为空，当前线程池中不需要
-            //那么多的线程存活可以把多余核心线程数的线程停止
+            /*
+            规定时间内没有拿到线程，说明队列为空，当前线程池中不需要
+            那么多的线程存活可以把多余核心线程数的线程停止
+            */
             w.lock();
             if (//线程池不是运行状态的，中断线程)
                 wt.interrupt();
             try {  task.run(); } //这里就是真正的执行线程
-      finally { task = null; w.completedTasks++;  w.unlock(); }
+            finally { task = null; w.completedTasks++;  w.unlock(); }
         }
         completedAbruptly = false;
     } finally {
@@ -141,8 +143,39 @@ public interface ScheduledExecutorService extends ExecutorService {
     ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit);
 }
 ```
-- 线程池原理总结
-    - JDK 线程池中如果核心线程数已经满了的话，那么后面再来的请求都是放到阻塞队列里面去
-    - 阻塞队列再满了，才会启用最大线程数
-    ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/ThreadPoolExecutor.png)
+- JDK线程池总结
+    - **[线程池解决的问题是什么](#)**
+        - 降低资源消耗：通过池化技术重复利用已创建的线程，降低线程创建和销毁造成的损耗
+        - 提高线程的可管理性：线程是稀缺资源,频繁申请/销毁资源和调度资源，将带来额外的消耗，可能会非常巨大
+        - 提供更多更强大的功能：线程池具备可拓展性,比如延时定时线程池ScheduledThreadPoolExecutor
+    - **[线程池的任务与线程管理的机制](#)**
+        - 线程池在内部实际上构建了一个生产者消费者模型，将线程和任务两者解耦，从而良好的缓冲任务，复用线程
+        - **[线程池的运行主要分为3个核心要素](#)**
+            - **[线程池自身的状态管理](#)**
+                - 线程池内部使用一个变量维护两个值：运行状态(runState)和线程数量 (workerCount)
+                - 高3位保存runState，低29位保存workerCount，两个变量之间互不干扰
+                - 用一个变量去存储两个值，可避免在做相关决策时，出现不一致的情况，不必为了维护两者的一致，而占用锁资源
+            ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/线程池状态.png)
+            - **[任务管理](#)**：任务管理充当生产者
+            - **[线程管理](#)**：线程管理充当消费者
+        - **[线程池的任务线程执行流程](#)**
+            - JDK 线程池中如果核心线程数已经满了的话，那么后面再来的请求都是放到阻塞队列里面去
+            - 阻塞队列再满了，才会启用最大线程数
+            - 这种是有点反常识的，因为认知里面是觉得最大线程数用完了才会使用加入到队列里面
+            ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/ThreadPoolExecutor.png)
+        - 增加线程 addWorker 的流程
+        ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/增加线程流程.png)
 
+        - 任务拒绝
+        ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/线程池拒绝策略.png)
+        - 线程回收
+            - 线程回收首先要解决的是判断线程是否在运行
+            - Worker是通过继承AQS，使用AQS来实现独占锁这个功能。没有使用可重入锁ReentrantLock
+            - 使用AQS，为的就是实现不可重入的特性去反应线程现在的执行状态
+            - lock方法一旦获取了独占锁，表示当前线程正在执行任务中
+        - **[线程池的异常时如何处理的？](#)**
+            - 准确的描述是线程池中抛出了一个没有 try catch 的异常会怎么处理？
+            - 调用 execute 方法提交线程时，异常信息会输出
+            - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
+    - tomcat 线程池的特点与jdk线程池的区别
+    ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
