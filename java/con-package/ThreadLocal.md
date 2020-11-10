@@ -60,6 +60,20 @@ key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key�
 把value覆盖掉，同一个key的原因是变量一直用的是为new 出来的同一个对象
 ```
 
+- ThreadLocalMap 类内部为什么有Entry数组，而不是Entry对象？
+    - 因为业务代码能new好多个ThreadLocal对象,但是一个Thread只有一个 ThreadLocalMap
+    - 为了在一个Thread对象的唯一一个 ThreadLocalMap 里面存多个ThreadLocal,因此适用Entry数组
+    - Entry 是存的键值对，key 是 ThreadLocal, value 是 ThreadLocal 对应的泛型值
+- ThreadLocal 的数据存储在jvm的哪个区域
+    - 不是线程私有的栈，ThreadLocal对象也是对象，对象就在堆。只是JVM通过一些技巧将其可见性变成了线程可见
+- ThreadLocal真的只是当前线程可见吗
+    - 通过 InheritableThreadLocal 类可以实现多个线程访问ThreadLocal的值
+- ThreadLocal 里的对象一定是线程安全的吗
+    ```
+    未必，如果在每个线程中ThreadLocal.set()进去的东西本来就是多线程共享的同一个对象，比如static对象，
+    那么多个线程的ThreadLocal.get()获取的还是这个共享对象本身，还是有并发访问线程不安全问题
+    ```
+
 - 内存泄漏问题
 ```
 实际上 ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用，弱引用的特点是，如果这个对象只存在弱引用，
