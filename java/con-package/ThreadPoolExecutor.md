@@ -179,3 +179,17 @@ public interface ScheduledExecutorService extends ExecutorService {
             - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
     - tomcat 线程池的特点与jdk线程池的区别
     ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
+
+    - 线程池使用的注意点
+        - 队列设置过长，最大线程数设置会失效
+        ```
+        该服务处理请求内部逻辑使用线程池做资源隔离，由于队列设置过长，最大线程数设置失效，
+        导致请求数量增加时，大量任务堆积在队列中，
+        任务执行时间过长，最终导致下游服务的大量调用超时失败
+        ```
+        
+        - 最大核心数设置偏小
+        ```
+        该服务展示接口内部逻辑使用线程池做并行计算，由于没有预估好调用的流量，
+        导致最大核心数设置偏小，大量抛出RejectedExecutionException，触发接口降级条件
+        ```

@@ -191,7 +191,7 @@ CountDownLatch
         - 队列同步器是通过 **[2 种队列](#)**, 和一个**[当前独占锁的线程变量](#)** 来达到线程的竞争执行和等待，和定向通知的
         - 2 种队列一种是 **[竞争队列](#)**，在 AbstractQueuedSynchronizer 里面维护
         - **[竞争队列的头节点是获得锁的线程](#)**，同时也会存在当前独占锁的线程变量 里面
-        - 2 种队列另一种是 **[等待队列](#)**，在 ConditionObject 里面维护，Lock.newCondition() 返回的就是这个对象
+        - 2 种队列另一种是 **[通知队列](#)**，在 ConditionObject 里面维护，Lock.newCondition() 返回的就是这个对象
         - 这 2 种队列实际上在代码上没有引用或者关联关系
     - 线程获得锁的过程 **[lock.lock()](#)**
         - **[公平锁](#)**：将当前线程封装为 Node 节点，**[加入竞争队列，自旋设置自己为队列头节点来获得锁](#)**
@@ -203,15 +203,6 @@ CountDownLatch
     - 线程释放锁的过程 **[lock.unlock()](#)**
         - 竞争队列的头节点从队列释放，当前独占锁的线程变量置为空
         
+- ReentrantLock 与 Synchronized 锁的区别对比
+    - ![innodb](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/重入锁与关键字锁对比.png)
 
-
-
-
-```
-public class ThreadPoolExecutor extends AbstractExecutorService {
-    class Worker  extends AbstractQueuedSynchronizer  implements Runnable{
-        public void lock()        { acquire(1); 	//这里的参数1实际上没有用，方法是用 CAS(0,1) }
-        public void unlock()      { release(1); }
-    }
-}
-```
