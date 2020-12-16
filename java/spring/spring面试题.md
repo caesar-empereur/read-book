@@ -78,6 +78,8 @@ public class B {
     - beanfactory 和 applicationcontext.
 - beanfactory和applicationcontext有什么区别？
     - beanfactory是基本容器，而applicationcontext是高级容器。Applicationcontext是扩展了beanfactory的接口
+    - apc 提供了更多的有用的功能。如国际化，访问资源，载入多个（有继承关系）上下文
+    - apc 使得每一个上下文都专注于一个特定的层次，消息发送、响应机制，AOP
     - beanfactory 的bean 是懒加载实例化，获取的时候发现没有才会实例化，Applicationcontext是启动完就会实例化
 - 构造器注入和 set 注入的区别是什么?
     - 构造器注入没有部分注入。set允许部分注入
