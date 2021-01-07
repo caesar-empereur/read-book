@@ -56,9 +56,15 @@
 |docker start 容器id | 启动容器 |
 |docker stop  容器id | 停止容器 |
 |docker rm 容器id | 删除容器 |
-|docker logs 容器id | 查看一个容器输出的错误日志 |
+|docker logs 容器id (-f 可以实时输出)| 查看一个容器输出的错误日志 |
 |docker inspect 容器id | 查看一个容器的 网络配置,容器本身的ip是多少 |
+|docker exec -it 容器id /bin/bash | 进入容器命令，可以执行jvm之类的命令,相当于shell |
 
+```
+docker ps -a 是查看所有的容器，包括非运行状态的
+docker ps | grep *** 可以用管道命令输出过滤
+docker images | grep *** 可以用管道命令输出过滤
+```
 
 ## Dockerfile
 
