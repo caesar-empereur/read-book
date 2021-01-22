@@ -50,6 +50,7 @@
 |:---------------|:-------------------|
 |docker search mysql | 搜索镜像 |
 |docker pull mysql | 拉取镜像 |
+|docker run -p 8189:8189 -d 镜像id| 启动镜像为运行的容器 |
 |docker run -it ubuntu /bin/bash | 使用命令行运行容器 |
 |docker images | 查看安装的镜像 |
 |docker ps -a | 查看所有的运行的容器 |
