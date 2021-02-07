@@ -19,10 +19,16 @@ cp /etc/kubernetes/admin.conf $HOME/.kube/config
 
 ```
 
+- 其他节点加入master
+```
+kubeadm init 输出的结果里面有一条 join 命令，复制出来
+kubeadm join 192.168.220.198:6443 --token vveu0f.ffqwvhoq785r3ghg 
+--discovery-token-ca-cert-hash sha256:36c49f135c3578b591a2e8b3d42062f2ca55c6852769941de4ad902ab6dad3fb
+```
+
 - 3 安装pod网络插件flannel
 ```
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-kubectl apply -f http://localhost:8078/flannel
 kubectl apply -f /home/base-service/k8s/kube-flannel.yml
 
 发现coredns还是pedding 这个没关系,我们还需要安装Pod Network插件,这里安装的是
@@ -74,16 +80,11 @@ kubernetes-dashboard   kubernetes-dashboard-7d9ddf9f8f-wf8rv        1/1     Runn
 
 
 ## kubectl 常用命令
-- 获取所有命名空间（或者某个空间）的 pod
-    - kubectl get pod --all-namespaces
-    - kubectl get pod -n kube-system
-    - kubectl get pod -n kubernetes-dashboard
-- 获取 node, service
-    - kubectl get nodes
-    - kubectl get svc -n kube-system
-    - kubectl get svc -n kubernetes-dashboard
-
-- 删除 pod
-    - kubectl delete pod kubernetes-dashboard-7d9ddf9f8f-j5wmf -n kubernetes-dashboard
-- 查看 pod 日志
-    - kubectl describe pod kubernetes-dashboard-7d9ddf9f8f-lx2xh --namespace=kubernetes-dashboard
+- kubectl get pod --all-namespaces
+- kubectl get pod -n kube-system
+- kubectl get nodes
+- kubectl get svc --all-namespaces
+- kubectl delete pod j5wmf -n *** --force --grace-period=0
+- kubectl describe pod lx2xh -n ku
+- netstat -lntup | grep nginx
+- kubectl logs -f ingress-controller-n4pd6 -n ingress-nginx
