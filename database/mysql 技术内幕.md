@@ -402,3 +402,8 @@
     - 读写分离是为了解决读比写多的情况，分散读写压力
 - 分库分表
     - 分库分表是为了解决写入的压力，包括单库的IO压力，将写入压力分散到多个库里
+
+## mysql tps qps 连接数之间的关系
+- 数据库的 QPS = TPS*20, QPS = 连接数*3，这个数据是阿里云的数据库用 sysbentch 工具测试的
+- 要达到5W个数据库连接，大概需要 单机16000连接数，4WQPS的 3台
+![tps-qps](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/tps-qps.png)
