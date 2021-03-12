@@ -64,6 +64,27 @@ key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key�
     - 因为业务代码能new好多个ThreadLocal对象,但是一个Thread只有一个 ThreadLocalMap
     - 为了在一个Thread对象的唯一一个 ThreadLocalMap 里面存多个ThreadLocal,因此适用Entry数组
     - Entry 是存的键值对，key 是 ThreadLocal, value 是 ThreadLocal 对应的泛型值
+    ```
+    private static final ThreadLocal<String> THREAD_LOCAL_A = new ThreadLocal<>();
+    private static final ThreadLocal<String> THREAD_LOCAL_B = new ThreadLocal<>();
+
+    public static void main(String[] args) {
+        THREAD_LOCAL_A.set("A");
+        THREAD_LOCAL_B.set("B");
+        test();
+    }
+
+    private static void test(){
+        System.out.println("THREAD_LOCAL_A 的值 " + THREAD_LOCAL_A.get());
+        System.out.println("THREAD_LOCAL_B 的值 " + THREAD_LOCAL_B.get());
+    }
+  
+    输出
+    Connected to the target VM, address: '127.0.0.1:3836', transport: 'socket'
+    THREAD_LOCAL_A 的值 A
+    THREAD_LOCAL_B 的值 B
+    这里说明业务代码new出来的多个 ThreadLocal 放在一个线程里面的map, 是不会互相影响的
+    ```
 - ThreadLocal 的数据存储在jvm的哪个区域
     - 不是线程私有的栈，ThreadLocal对象也是对象，对象就在堆。只是JVM通过一些技巧将其可见性变成了线程可见
 - ThreadLocal真的只是当前线程可见吗
@@ -78,9 +99,49 @@ key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key�
 ```
 实际上 ThreadLocalMap 中使用的 key 为 ThreadLocal 的弱引用，弱引用的特点是，如果这个对象只存在弱引用，
 那么在下一次垃圾回收的时候必然会被清理掉。
-所以如果 ThreadLocal 没有被外部强引用的情况下，在垃圾回收的时候会被清理掉的，这样一来 ThreadLocalMap中使用这个 
-ThreadLocal 的 key 也会被清理掉。但是，value 是强引用，不会被清理，这样一来就会出现 key 为 null 的 value。
-ThreadLocalMap实现中已经考虑了这种情况，在调用 set()、get()、remove() 方法的时候，会清理掉 key 为 null 的记录。
-如果说会出现内存泄漏，那只有在出现了 key 为 null 的记录后，没有手动调用 remove() 方法，
-并且之后也不再调用 get()、set()、remove() 方法的情况
+
+正常情况下 ThreadLocal 在代码里面是根对象的话，是不存在被回收的，也就是修饰为 final, static 的根对象。
+出现内存泄漏，ThreadLocal 作为 key 被回收，应该是在代码里面定义成实例变量，局部变量之类的会被回收的内存对象
 ```
+
+- InheritableThreadLocal 在父子线程之间传递变量的类
+  - ThreadLocal 作为线程变量传递的类，只能在一个线程上下文传递，无法跨线程传递
+  - 对于要将变量传递到异步线程，子线程，需要用这个 继承的ThreadLocal
+  - 子线程继承父线程的变量，与子线程自己的 ThreadLocal 本身不会冲突覆盖，因为是2个ThreadLocal
+  - 子线程可以继承的变量的方式包括新建线程，线程池提交线程，不管什么方式，只要是操作系统的子线程，就满足
+  ```
+  private static final ThreadLocal<String> THREAD_LOCAL_IN = new InheritableThreadLocal<>();
+  private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<>();
+  private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(1);
+  
+  public static void main(String[] args) {
+        THREAD_LOCAL_IN.set("A");
+        System.out.println("当前线程 " + Thread.currentThread().getName());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                THREAD_LOCAL.set("B");
+                System.out.println("当前线程 " + Thread.currentThread().getName());
+                System.out.println("当前线程 获取到父线程的变量 " + THREAD_LOCAL_IN.get() + " " + THREAD_LOCAL.get());
+            }
+        }).start();
+
+        EXECUTOR_SERVICE.submit(new Runnable() {
+            @Override
+            public void run() {
+                THREAD_LOCAL.set("B");
+                System.out.println("当前线程 " + Thread.currentThread().getName());
+                System.out.println("当前线程 获取到父线程的变量 " + THREAD_LOCAL_IN.get() + " " + THREAD_LOCAL.get());
+            }
+        });
+    }
+  
+   输出
+  当前线程 main
+  当前线程 Thread-0
+  当前线程 获取到父线程的变量 A B
+  当前线程 pool-1-thread-1
+  当前线程 获取到父线程的变量 A B
+  
+  ```
