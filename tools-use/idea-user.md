@@ -1,2 +1,0 @@
-- gradle 依赖分析
-    - 编辑器任何地方右键，diagrams-->show diagrams-->gradle dependencies
