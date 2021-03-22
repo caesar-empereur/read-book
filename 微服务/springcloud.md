@@ -32,22 +32,63 @@
 - 分区的 **[网络断开]()** 后，每个分区自己单独选举出来一个领导，或者只处理自己分区的数据，就会与另外的分区 **[数据不一致]()**
 - 因此在领导选举的时候有 **[过半选举机制](#)**，确保其他分区能正常通信，保持数据一致性
 
-## feign 问题总结
+## **[springcloud 微服务应用问题总结]()**
 - feign 的远程调用资源隔离模式
-    - feign 的远程调用有2种，包括 线程隔离，信号量隔离
-    - 线程隔离就是新建异步线程，信号量隔离就是使用当前线程远程调用
-    - feign 默认的就是线程隔离模式
-- feign 的断路器 hystrix 开启后，调用线程为异步线程的问题
-    - 描述
+  - feign 的远程调用有2种，包括 线程隔离，信号量隔离
+  - 线程隔离就是新建异步线程，信号量隔离就是使用当前线程远程调用
+  - feign 默认的就是线程隔离模式
+  - feign 的线程隔离还体现在不同的 FeignClient 注解的调用使用的线程池不一样
+  - 一般是指不同的feign服务, 相同的feign服务里面不同的接口，使用的线程池也是一样的，只跟服务名有关
     ```
-    feign 的 fallback 断路器要生效的话, 必须开启配置项 hystrix.feign.enable=true。
-    但是该配置开启后远程调用的时候会启动新的异步线程，导致 ThreadLocal 无法传递
-    
+    2021-03-17 16:37:34.125  [ce-provider-b-2] com.feign.FeignFliterConfig  : ---feign 调用前拦截，当前线程 hystrix-service-provider-b-2
+    2021-03-17 16:37:37.378  [ce-provider-a-3] com.feign.FeignFliterConfig  : ---feign 调用前拦截，当前线程 hystrix-service-provider-a-3
     ```
-    - 解决方法 1
+- feign 的断路器hystrix开启后，异步线程调用导致 ThreadLocal 丢失问题
+  - 描述
+      ```
+      feign 的 fallback 断路器要生效的话, 必须开启配置项 hystrix.feign.enable=true。
+      但是该配置开启后远程调用的时候会启动新的异步线程，导致 ThreadLocal 无法传递
+      ```
+  - 解决方法 1 (修改隔离模式为信号量)
         - 开启 hystrix.shareSecurityContext=true 配置，开启线程共享上下文，会使用信号量隔离模式
-    - 解决方法 2
         - 注册一个配置为信号量隔离模式的bean, 并且 FeignClient 指定 configuration=该bean，也会使用信号量隔离模式
-    - 解决方法 3
+  - 解决方法 2 (对子线程调用封装, 传递变量)
         - 使用默认的线程隔离模式，对子线程调用进行封装，在2个线程中实现传递上下文信息的逻辑
-    - 使用 InheritableThreadLocal 传递父线程的变量到子线程
+  - 解决方法 2 (使用继承的 ThreadLocal)
+        - 使用 InheritableThreadLocal 传递父线程的变量到子线程
+- feign 的超时问题
+    - feign.hystrix.enabled=false 时候，feign 的timeout配置才会起作用
+    - feign 配置的超时时间，默认的在到超时时间之后会重试一次
+    - 默认的 feign 调用的底层 http 请求是用的 java.net.HttpUrlConnection 类，不是 HttpClient
+- feign 超时重试次数的问题
+    - 配置的次数与时间，跟实际的超时状况统计
+    ```
+    RetryTemplate 里面的 retry 逻辑状态被重置过一次
+    RetryContext 有2个不一样的
+    
+    feign.hystrix.enabled=false, fallback 失效的情况下进行的测试
+    
+    总的请求时间与配置的超时时间，重试次数的关系
+    配置超时 3 秒，重试 2 次
+    3秒 * (第 1 次 + feign 重试 1 次) * RxJava 重试 2 次 = 3 * (1+1) * 2 = 12
+    
+    配置超时 3 秒，重试 3 次
+    3秒 * (第 1 次 + feign 重试 1 次) * RxJava 重试 3 次 = 3 * (1+1) * 3 = 18
+    ```
+- feign 超时重试机制不同的实现
+    - 重试的不同机制
+          ```
+          spring.cloud.loadbalancer.ribbon.enabled=false
+          ```
+        - 该配置项开启之后，执行重试的代码是 RetryTemplate.doExecute， LoadBalancerCommond.submit()
+        - 该配置项关闭之后，执行重试的代码是 FeignBlockingLoadBalancerClient.execute()
+        - 总的调用时间 = 配置的超时时间 * 重试次数, 试次数是包括第一次调用的
+        - ribbon 现在处于维护模式，负载均衡是用新的 springcloud-loadbalancer
+        - feign.hystrix.enable=true 的时候， feign 会将调用的所有方法加上断路器封装
+    - FeignBlockingLoadBalancerClient 调用跟重试的实现逻辑
+        - 1 根据配置的 Retryer 类，生成对应的bean信息
+        - 根据注册发现机制，从注册中心获取到服务列表，并且生成服务均衡客户端的map信息(工厂类)
+        - 根据serviceId 获取到对应的负载均衡客户端，执行 choose 方法
+        - choose 方法执行的逻辑是计算下标，对实例list.size()取模，得到对应的实例返回
+        - 将得到的实例的Ip，端口替换掉URL中的服务名，执行http调用
+        - 每次超时异常统计次数，超出指定次数抛异常

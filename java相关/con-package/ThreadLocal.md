@@ -94,6 +94,8 @@ key 为ThreadLocal，在同一个线程对象中，多次set操作设置的key�
     未必，如果在每个线程中ThreadLocal.set()进去的东西本来就是多线程共享的同一个对象，比如static对象，
     那么多个线程的ThreadLocal.get()获取的还是这个共享对象本身，还是有并发访问线程不安全问题
     ```
+- ThreadLocal的key为什么是ThreadLocal的弱引用，不用若引用行不行？
+  - ThreadLocalMap 是Thread的变量，生命周期跟随Thread对象，Thread对象线程结束后会被回收
 
 - 内存泄漏问题
 ```
