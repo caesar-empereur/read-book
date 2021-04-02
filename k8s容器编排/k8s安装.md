@@ -24,6 +24,12 @@ cp /etc/kubernetes/admin.conf $HOME/.kube/config
 kubeadm init 输出的结果里面有一条 join 命令，复制出来
 kubeadm join 192.168.220.198:6443 --token vveu0f.ffqwvhoq785r3ghg 
 --discovery-token-ca-cert-hash sha256:36c49f135c3578b591a2e8b3d42062f2ca55c6852769941de4ad902ab6dad3fb
+
+把master也当作node的命令
+kubectl taint node --all node-role.kubernetes.io/master-
+
+把master恢复为master的命令
+kubectl taint node --all node-role.kubernetes.io/master="":NoSchedule
 ```
 
 - 3 安装pod网络插件flannel

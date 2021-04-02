@@ -86,7 +86,7 @@
         - ribbon 现在处于维护模式，负载均衡是用新的 springcloud-loadbalancer
         - feign.hystrix.enable=true 的时候， feign 会将调用的所有方法加上断路器封装
     - FeignBlockingLoadBalancerClient 调用跟重试的实现逻辑
-        - 1 根据配置的 Retryer 类，生成对应的bean信息
+        - 根据配置的 Retryer 类，生成对应的bean信息
         - 根据注册发现机制，从注册中心获取到服务列表，并且生成服务均衡客户端的map信息(工厂类)
         - 根据serviceId 获取到对应的负载均衡客户端，执行 choose 方法
         - choose 方法执行的逻辑是计算下标，对实例list.size()取模，得到对应的实例返回
