@@ -209,12 +209,12 @@
        |-----------|-------------------|-------|
        |定义|redolog称为重做日志，用来保证事务的 **[持久性](#)**|undo log用来保证事务的 **[原子性](#)**|
        |日志类型|redo通常是物理日志，记录的是页的物理修改操作(不是操作的语句)|undo是逻辑日志，根据每行记录进行记录|
-       |执行过程|redo 每次事务提交时要将所有操作写入重做日志缓冲区，再刷新到重做日志缓冲文件|undo是需要回滚时执行，回滚不是将执行语句撤销，而是执行与语句相反的语句，insert回滚时会执行delete|
+       |执行过程|redo 每次事务提交时要将所有操作写入redo buffer，再刷新到磁盘，然后被删除覆盖|undo是需要回滚时执行，回滚不是将执行语句撤销，而是执行与语句相反的语句，insert回滚时会执行delete|
    - binlog 与 undolog 的区别
        - **[redolog是innodb才有的，binlog是mysql server 层都有的](#)**
        - **[redolog 大小是固定的，循环写入，刷新到磁盘后会清除，无法用于回滚操作](#)**
        - redo log主要节省的是随机写磁盘的IO消耗(转成顺序写)
-       - redolog 可以用于奔溃后数据恢复，就是 crash safe, binlog 是没有 crash safe 能力的
+       - redolog 可以用于(只写到内存没写到磁盘)的奔溃后数据恢复，就是 crash safe, binlog 是没有 crash safe 能力的
        - **[只要redolog和binlog日志文件成功写入，mysql就能保证数据不丢，就是保证持久化](#)**
        - binlog 不是直接写入到磁盘的，而是写入到binlog cache, 事务提交的时候再刷新到磁盘上的
        - 每个线程是单独的binlog cache, 但是binlog文件是共享的
