@@ -296,15 +296,14 @@
   
 ## mysql 分布式事务
 
->>**[mysql本身是支持分布式事务的，是由 XA 事务实现的](#)**
+- **[mysql本身是支持分布式事务的，是由 XA 事务实现的](#)**
 
-  * XA事务由一个或多个资源管理器、一个事务管理器以及一个应用程序组成
-  
+- XA事务由一个或多个资源管理器、一个事务管理器以及一个应用程序组成
     * 资源管理器：提供访问事务资源的方法。通常一个数据库就是一个资源管理器
     * 事务管理器：协调参与全局事务中的各个事务。需要和参与全局事务的所有资源管理器进行通信
     * 应用程序：定义事务的边界，指定全局事务中的操作
     
-  * mysql XA 事务的操作流程
+- mysql XA 事务的操作流程
     * XA START|BEGIN xid
     * XA END xid
     * XA PREPARE xid
@@ -312,16 +311,14 @@
     * XA ROLLBACK xid
     * XA RECOVER xid
     
->> show variable like innodb_support_xa  可以查看数据库是否支持 分布式XA事务
-
-  * JAVA XA事务的实例
+- JAVA XA事务的实例
     * javax.sql包下面有分别的对应XA事务的类，XAConnection, XADatasSource, XAResource
     * 分别建立2个数据库的连接，获取到对应的2个，XAConnection, XAResource, Statement
     * 分别执行2个 XAResource.start()-->Statement.execute()-->XAResource.end()
     * 分别执行 XAResource.prepare()
     * 分别判断 2个prepate的执行结果,都是OK的话，就都执行 XAResource.commit(), 否则 XAResource.rollback()
     
-  * 不好的事务提交习惯
+- 不好的事务提交习惯
     * 循环中提交事务
     * 自动提交事务
     * 长事务(执行时间很长的事务)
