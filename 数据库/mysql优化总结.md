@@ -81,4 +81,21 @@
 
 ## mysql 常见优化场景
 - 大数据分页查询优化
-    
+    - 放弃全表count, 改成 select max(id)
+    - 关联多表的分页查询
+        - 不能用常见的偏移量查，要先用子查询限定结果集查出id，然后外面查询用 where id in()
+        ```
+        SELECT aa.id,aa.checkin_photo,aa.checkin_status,aa.checkin_time,aa.checkout_photo,aa.checkout_status,aa.checkout_time,"
+        aa.CODE,aa.date,aa.schedule_id,ac.clear_hour,ac.early_hour,ac.late_hour,ac.total_hour 
+        FROM (SELECT * FROM t_attendance_log_2000w 
+         WHERE id IN ( SELECT id FROM ( SELECT id FROM t_attendance_log_2000w WHERE id BETWEEN ?1 AND ?2 ORDER BY id DESC ) tt )) aa
+        ```
+
+## 数据库设计的3大范式
+- 第一范式：字段原子性，属性不可分割
+    - 字段还能再分割的话应该继续分割，例如地址信息，应该是省，市，区
+- 第二范式：表中的字段必须完全依赖主键(与主键相关)
+    - 主键用来确定唯一性，表中的其他字段依赖于主键来确定唯一性
+    - 例如用户表中，张三的年龄性别等字段必须是根据主键确定到的张三的这行信息，而不是别人的
+- 第三范式：应该消除传递依赖，消除冗余
+    - 订单表中有用户信息，应该只有 userid 字段，不应该有用户名，手机号，性别等其他用户的信息
