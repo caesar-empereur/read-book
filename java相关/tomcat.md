@@ -25,3 +25,9 @@
 - springboot 的线程与数据库执行阻塞的关系
     - springboot 的容器默认是tomcat, 当在代码中 sleep 线程时，线程是休眠状态
     - 线程在执行数据库(jpa)操作，数据库长时间阻塞没有返回时，线程是运行(runnable状态)
+
+- 内置tomcat启动处理请求流程
+  - 创建tomcat对象，创建连接器并且赋给 tomcat对象
+  - 启动一个 Acceptor 线程，run 方法里面每隔 50 毫秒从 ServerSocketChannel accecpt 一个socket 出来
+  - Acceptor 线程将socket封装好之后提交到tomcat的线程池，接下来就是 http-nio-exec 的线程来处理业务
+  - http-nio-exec 线程需要解析socket为请求对象，service方法处理后解析为 response 对象返回
