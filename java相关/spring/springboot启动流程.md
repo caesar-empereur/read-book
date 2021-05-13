@@ -17,3 +17,9 @@
         - 启动一个 Acceptor 线程，run 方法里面每隔 50 毫秒从 ServerSocketChannel accecpt 一个socket 出来
         - Acceptor 线程将socket封装好之后提交到tomcat的线程池，接下来就是 http-nio-exec 的线程来处理业务
         - http-nio-exec 线程需要解析socket为请求对象，service方法处理后解析为 response 对象返回
+
+
+## springboot starter 的原理
+- 定义一个配置类，@Configuration 注解的类
+- 在 resources/META-INFO 目录下新建一个 spring.factories，写上以下内容
+- org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.demo.starter.config.DemoConfig
