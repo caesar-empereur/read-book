@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapi-service-xmx
+  labels:
+    app: webapi-service-xmx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapi-service-xmx
+  template:
+    metadata:
+      labels:
+        app: webapi-service-xmx
+    spec:
+      containers:
+        - name: webapi-service-xmx
+          image: webapi-service-docker
+          imagePullPolicy: Never
+          resources:
+            requests:
+              memory: 100Mi
+            limits:
+              memory: 200Mi
+          args:
+            - -mem-total #分配的内存大于容器的最大内存200
+            - 250Mi
+          ports:
+            - containerPort: 8080
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapi-service-xmx
+  namespace: default
+  labels:
+    app: webapi-service-xmx
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 30090
+  selector:
+    app: webapi-service-xmx

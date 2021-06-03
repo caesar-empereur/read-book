@@ -97,3 +97,5 @@ Docker中有成百上千的容器需要启动，如果一个一个的启动那�
     
 ## k8s应用部署架构
    - ![2pc](https://github.com/caesar-empereur/read-book/blob/master/photo/k8s/k8s-应用部署架构.png)
+
+## k8s 持久化存储

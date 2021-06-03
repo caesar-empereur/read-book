@@ -56,7 +56,9 @@
 |docker ps -a | 查看所有的运行的容器 |
 |docker start 容器id | 启动容器 |
 |docker stop  容器id | 停止容器 |
+|docker stats  (容器id) | 查看所有(某个容器) 的运行状态，包括CPU,内存占用 |
 |docker rm 容器id | 删除容器 |
+|docker cp 文件 容器id:/home | docker的文件复制，将宿主机的文件复制到容器中的目录 |
 |docker logs 容器id (-f 可以实时输出)| 查看一个容器输出的错误日志 |
 |docker inspect 容器id | 查看一个容器的 网络配置,容器本身的ip是多少 |
 |docker exec -it 容器id /bin/bash | 进入容器命令，可以执行jvm之类的命令,相当于shell |
@@ -83,7 +85,8 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 |ENTRYPOINT | 容器实际运行的命令 |
 |docker build -t 镜像名称 . | 构建镜像 |
 |docker images | 查看是否已经构建成功 |
-|docker run -d -p 8080:8085 镜像名称 | 指定端口映射的方式来启动容器 |
+|docker image rm 镜像名称/id | 删除docker镜像 |
+|docker run -d -p -m 500M 8080:8085 镜像名称 | 指定端口映射的方式来启动容器，也可以对容器内存坐限制 |
 |docker run --net=host 镜像名称 | 使用与宿主机一样的网络来启动容器 |
 
 

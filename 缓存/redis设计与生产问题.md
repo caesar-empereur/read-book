@@ -59,3 +59,4 @@
 ## redis 生产问题
 - 阿里云redis集群对lua脚本调用的限制
 - springboot 单节点配置连接到 haproxy 对redis集群的key的重定向导致key找不到
+- Could not get a resource from the pool#012#011at redis.clients.util.Pool.getResource
