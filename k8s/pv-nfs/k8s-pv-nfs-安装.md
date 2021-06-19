@@ -1,0 +1,7 @@
+- sudo ufw status 关闭防火墙
+- showmount -e 服务端IP地址 查看已经挂载的信息
+- sudo apt install nfs-kernel-server 安装nfs
+- 在本地目录下创建一个文件夹用于共享使用，例如/home/feng/workSpace/nfsShare
+- vim /etc/exports，在文件后加入/home/feng/workSpace/nfsShare *(rw,sync,no_root_squash)
+- /etc/init.d/rpcbind restart
+- /etc/init.d/nfs-kernel-server restart

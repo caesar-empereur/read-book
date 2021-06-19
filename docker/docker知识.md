@@ -53,6 +53,9 @@
 |docker run -p 8189:8189 -d 镜像id| 启动镜像为运行的容器 |
 |docker run -it ubuntu /bin/bash | 使用命令行运行容器 |
 |docker images | 查看安装的镜像 |
+|docker build -t 镜像名称 . | 构建镜像 |
+|docker images | 查看是否已经构建成功 |
+|docker image rm 镜像名称/id | 删除docker镜像 |
 |docker ps -a | 查看所有的运行的容器 |
 |docker start 容器id | 启动容器 |
 |docker stop  容器id | 停止容器 |
@@ -62,6 +65,8 @@
 |docker logs 容器id (-f 可以实时输出)| 查看一个容器输出的错误日志 |
 |docker inspect 容器id | 查看一个容器的 网络配置,容器本身的ip是多少 |
 |docker exec -it 容器id /bin/bash | 进入容器命令，可以执行jvm之类的命令,相当于shell |
+|docker run -d -p -m 500M 8080:8085 镜像名称 | 指定端口映射的方式来启动容器，也可以对容器内存坐限制 |
+|docker run --net=host 镜像名称 | 使用与宿主机一样的网络来启动容器 |
 
 ```
 docker ps -a 是查看所有的容器，包括非运行状态的
@@ -83,11 +88,7 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 |ADD | 把当前路径的文件添加到容器中 |
 |EXPOSE | 暴露容器的指定端口 |
 |ENTRYPOINT | 容器实际运行的命令 |
-|docker build -t 镜像名称 . | 构建镜像 |
-|docker images | 查看是否已经构建成功 |
-|docker image rm 镜像名称/id | 删除docker镜像 |
-|docker run -d -p -m 500M 8080:8085 镜像名称 | 指定端口映射的方式来启动容器，也可以对容器内存坐限制 |
-|docker run --net=host 镜像名称 | 使用与宿主机一样的网络来启动容器 |
+
 
 
 ## docker 容器与宿主机的网络
