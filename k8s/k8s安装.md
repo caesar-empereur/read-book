@@ -94,3 +94,4 @@ kubernetes-dashboard   kubernetes-dashboard-7d9ddf9f8f-wf8rv        1/1     Runn
 - kubectl describe pod lx2xh -n ku
 - netstat -lntup | grep nginx
 - kubectl logs -f ingress-controller-n4pd6 -n ingress-nginx
+- kubectl exec -it podid /bin/sh

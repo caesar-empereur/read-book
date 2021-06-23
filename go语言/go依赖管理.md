@@ -1,7 +1,7 @@
 ### go mod
 ```
 go env -w GO111MODULE=on
-go env -w GOPROXY=https://goproxy.cn,direct
+go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 
 在go语言中，第三方依赖的管理工具经过了一个漫长的发展过程。
 在GO1.11 发布之前govendor、dep等工具百花齐放。知道go mod 出现，开始一统天下
