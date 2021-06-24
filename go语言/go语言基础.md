@@ -119,3 +119,69 @@
   }
   ```
 - 结构体实例化
+  - 普通的实例化 || var p Point
+  - 指针类型的实例化
+    - ins := new(Point)  ins 的类型为 *Point, 属于指针
+  - 取结构体地址的实例化
+    - ins := &Point  ins 的类型为 *Point, 属于指针
+- 结构体成员变量实例化
+  ```
+  type Address struct {
+      City string
+      province string
+  }
+  addr := Address {
+      "成都",
+      "四川"
+  }
+  ```
+- 函数封装
+  - go 的类型或结构体没有构造函数，结构体的初始化过程是用 函数封装 实现的
+  ```
+  func newAddress(city string) *Address {
+      return &Address{
+            City: city,
+      }
+  }
+  ```
+- 方法
+  - go 中的方法是一种作用与类型变量的函数，特定类型叫接收器
+  - 如果将特定类型理解为结构体或“类”时，接收器的概念就类似于其他语言中的this或者self
+  - go 的方法与函数的区别是函数没有作用对象，方法的作用对象是 接收器
+  - go 的面向过程没有方法的概念，而是有函数参数与调用关系形成接近方法的概念
+  - 接收器
+  ```
+  func (接收器变量 接收器类型) 方法名(参数列表) (返回参数) {
+      函数体
+  }
+  
+  type Address struct{
+      City string
+  }
+  func (a *Address) addCity (name string){  // 这里Address的指针作为参数， Address 是一个接收器
+      a.City = name
+  }
+  
+  ``` 
+  - 指针类型的接收器
+    - 指针的特性，调用方法，修改接收器指针的成员变量，方法结束后修改都是有效的
+    ```
+    type Property struct {
+         value int
+    }
+    func (p *Property) SetValue(v int) {
+        p.value = v  //修改接收器指针成员变量是有效的
+    }
+    ```
+  - 非指针类型的接收器
+    - go 代码运行方法时，会将接收器的指复制一份, 对接收器的变量修改无效
+    ```
+    func (p Property) add(other Property) Property {
+        return Property{p.value + other.value}
+    }
+    ```
+  - 指针与非指针接收器的区别
+    - 在计算机中，小对象由于值复制时的速度较快，所以适合使用非指针接收器
+    - 大对象因为复制性能较低，适合使用指针接收器，在接收器和参数间传递时不进行复制，只是传递指针
+
+## 接口
