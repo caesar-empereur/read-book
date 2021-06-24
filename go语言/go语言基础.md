@@ -185,3 +185,36 @@
     - 大对象因为复制性能较低，适合使用指针接收器，在接收器和参数间传递时不进行复制，只是传递指针
 
 ## 接口
+- 接口的声明
+  ```
+  type 接口类型 interface {
+      方法1 (参数列表) 返回值列表
+      方法2 (参数列表) 返回值列表
+  }
+  ```
+- 接口的实现
+  - 类型中添加与接口签名一致的方法就可以实现接口的方法
+  - 接口的所有方法都被实现
+  - 签名指方法名，参数列表，返回参数列表
+  - Go语言的接口实现是隐式的，无须让实现接口的类型写出实现了哪些接口
+  ```
+  type DataWriter interface {
+      WriteData(data interface{}) error
+  }
+  type file struct {
+  }
+  //实现接口的方法
+  func (d *file) WriteData(data interface{}) error {
+      fmt.Println("Write Data: ", data)
+      return nil
+  }
+  func main() {
+      f := new(file)  // file 实例化
+      var writer DataWriter //声明一个**类型的接口
+      writer = f        //将接口赋值为 f, 也就是 * file类型
+      writer.WriteData("data")
+  }
+   将*file类型的f赋值给Data Writer接口的writer，
+  虽然两个变量类型不一致。但是writer是一个接口，且f已经完全
+  实现了Data Writer()的所有方法，因此赋值是成功的
+  ```
