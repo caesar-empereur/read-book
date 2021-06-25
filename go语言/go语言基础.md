@@ -218,3 +218,49 @@
   虽然两个变量类型不一致。但是writer是一个接口，且f已经完全
   实现了Data Writer()的所有方法，因此赋值是成功的
   ```
+- 一个类型可以实现多个接口
+  ```
+  type Writer interface {
+      Write(p []byte) (n int, err error)
+  }
+  type Closer interface {
+      Close() error
+  }
+  type Socker struct {
+  }
+  func (s *Socker) Write(p []byte) (n int, err error) {
+      return 0, nil
+  }
+  func (s *Socket) Close() error {
+      return nil
+  }
+    
+  ```
+- 接口的嵌套
+  - go 语言中不仅结构体可以嵌套，接口也可以嵌套
+  - 
+  ```
+  接上面代码
+  type WriterCloser interface {
+      Writer
+      Closer
+  }
+  func main() {
+      /**
+      Socket 实现了Writer Closer 2个方法，WriterCloser接口也包含了这2个接口
+      因此WriterCloser接口可以赋值为 Socket 的实例
+      */
+      var wc WriterCloser = new(Socket)
+      wc.Write(nil)
+      wc.Close()
+  }
+  ```
+- 接口的类型转换
+  - 实现某个接口的类型同时实现了另外一个接口，此时可以在两个接口间转换
+- 空接口
+  - 空接口类似Java 中的 Object
+  ```
+  空接口的内部实现保存了对象的类型和指针。
+  使用空接口保存一个数据的过程会比直接用数据对应类型的变量保存稍慢。
+  因此在开发中，应在需要的地方使用空接口，而不是在所有地方使用空接口
+  ```
