@@ -107,6 +107,25 @@
   }
   f(100) // 使用f()调用
   ```
+- 函数实现接口
+  - 结构体可以实现接口，函数也可以实现接口
+  - 函数的声明不能直接实现接口，将函数声明为类型，使用类型实现结构体
+  - 当类型方法被调用时，需要调用函数体
+  ```
+  
+  type Invoker interface{
+      Call(interface{})
+  }
+  type FuncCaller func(interface{}) //将FuncCaller定义为函数类型
+  
+  //这里类似结构体类型实现接口
+  func (f FuncCaller) Call(interface{}){  // 实现 Invoker 接口的 Call 方法
+      f(p)
+  }
+  ```
+- 代码延迟执行 defer
+  - 被 defer 修饰的语句会延后执行
+  - defer 操作常被用来关闭某些资源，例如文件，流的关闭
 
 ## 结构体
 - go 语言中使用结构体来实现类似 Java 的类的概念
