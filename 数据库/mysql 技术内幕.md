@@ -110,6 +110,31 @@
   |隔离性|事务与事务之间的操作不能互相影响|
   |持久性|事务一旦提交就应该永久保存|
 
+- 更新事务需要的锁与等待
+```
+针对同一行数据，事务A开始后未提交，事务B必须要等待A提交后才能执行
+
+事务A：
+start TRANSACTION;
+update t_storage set count = count -1 where id = 1;
+
+事务B：
+start TRANSACTION;
+update t_storage set count = count -1 where id = 1;
+
+A不提交的情况下B会一直等待，超过默认时间50S会报事务等待释放锁超时
+1205 - Lock wait timeout exceeded; try restarting transaction
+
+这种等待流程上是串行的
+
+B事务如果是查询，是不用等待A事务释放的
+
+mysql 更新如果是针对唯一索引的某一行纪录，会用行锁锁主，再执行事务，事务提交行锁释放
+行锁是锁在索引上的，如果是唯一索引，则索引会查找到第一条满足的纪录就锁住，
+如果是普通索引，则索引会查找到第一个不满足的纪录就把前面的所著，也就是所著满足条件的
+多行纪录
+```
+
 * 事务的分类
 
     |事务|描述|
