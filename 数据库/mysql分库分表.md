@@ -111,3 +111,14 @@ max      step
 - 每次从数据库更新最大值，update max = max + step,并且把当前最大值 max，step 作为号码段放到内存中
 - 放到内存中的号码段是 10000-20000
 - 用完的时候再去更新取出
+
+
+## mysql 高可用架构
+- mysql MHA 是一个可以实现mysql 主从复制，故障转移的高可用的第三方的工具
+- MHA 中包含一个 manager 和 manager 管理下的多个主从复制的集群
+- 集群包含主从复制中常见的 master, slave 结构，slave复制master的日志，读写分离
+- 一个 manager 可以管理多个主从复制的集群
+- MHA 管理的集群中，最少必须有3个节点，一个master, 2个slave
+- master 提交事务时，执行的是半同步的复制，只要有超过一台slave应答事务即可提高成功
+- master 发生故障时，manager 可以在30秒内从有最新日志的slave中找出一个成为新的master
+- 接着将其他的slave复制新的master的差异的日志

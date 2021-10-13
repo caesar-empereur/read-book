@@ -347,4 +347,68 @@ pipeline 机制可以实现一次将多个redis操作变成一次请求，不需
 pipeline 机制可以提高吞吐量，但无法保证原子性，事务
 ```
 
-
+## redis 的数据结构总结
+- string
+  - redis 的字符串处理没用c语言的字符串，而是用了简单动态的字符串
+  - 不用担心字符串变更导致内存溢出
+  - 常数时间复杂度获取字符串的长度
+  - 空间预分配，防止多次重分配内存
+- list
+  - redis 的list是用双向链表实现的
+  - redis 3.0之后不用链表实现 list了，改用 quicklist
+  - 
+  - 
+- hash
+  - redis 的hash就是哈希表，数组加上单向链表的结构
+  - 链地址法解决哈希冲突，链表没有用红黑树优化
+  - rehash优化，将数据迁移中的大批量操作分摊到每一次的key操作中
+  
+- set
+  - 由 ziplist 组成的
+- zset
+  - set 的元素是不能重复的，zset 的元素除了不能重复，还有排序的性质
+  - zset的底层编码有两种数据结构，一个ziplist，一个是skiplist
+  
+- bitmap 布隆过滤器
+- geo
+    - geo 是跟地理位置相关的，常见用于附近的人，或者美团上附近的商家距离多远
+    - Redis 的 Geo 是在 3.2 版本才有的
+    - geoadd 命令(添加经纬度坐标)
+        - geoadd cityGeo 116.405285 39.904989 "北京"
+        - geoadd cityGeo 121.472644 31.231706 "上海"
+    - geopos 命令(返回经纬度坐标)
+        - geopos cityGeo 北京
+    - geodist (返回2个位置的距离)
+        - geodist cityGeo 北京 上海 km
+    - georadius (获取某个位置为中心，半径多少内符合条件的位置列表)
+    - geohash
+    - geo 是将二维的坐标编码为一维的数据然后存储到 zset 结构的
+- hyperlog
+    - HyperLogLog 是一种算法，它提供了不精确的去重计数方案
+    
+## redis 依赖的数据结构
+- skiplist
+    - 跳表就是链表与二分法的结合，目的是提高访问的效率，时间复杂度 log(n)
+      ![https](https://github.com/caesar-empereur/read-book/blob/master/photo/redis/skiplist.png)
+    - 跳表的思想就是在原有的有序的链表上构建节点数逐步减少的多层次的链表
+    - 跳表的元素的访问是通过在最上级的链表逐步比较，依次向下访问定位，最终找到指定元素
+    - 为什么要使用跳表，而不使用二叉树或者哈希表？
+    - 哈希表的访问时间复杂度是O(1),但是元素的存放是无序的，不能范围查找
+    - 二叉树或者平衡树在树的节点变化移动之后，维持平衡需要重新变换节点位置，消耗性能
+- ziplist
+    - ziplist是由一系列特殊编码的连续内存块组成的顺序存储结构，类似于数组，ziplist在内存中是连续存储的
+    - 但是不同于数组，为了节省内存 ziplist的每个元素所占的内存大小可以不同,设计目标就是为了提高存储效率
+    - 普通的双向链表，链表中每一项都占用独立的一块内存，之间用指针连接起来。这种方式会带来大量的内存碎片
+    - 而ziplist却是将表中每一项存放在前后连续的地址空间内，一个ziplist整体占用一大块内存
+    - redis 的list, hash, zset 都使用了该数据结构
+    - ziplist结构由三大部分组成，其分别是列表头（ziplist Header），数据节点（Entries）和列表尾（ziplist tail）
+    - 往ziplist里插入一个entry 时间复杂度 平均:O(n), 最坏:O(n²)
+    - 从siplist里删除一个entry 时间复杂度 平均:O(n), 最坏:O(n²)
+    - ziplist 每次的数据变动都可能引发连续更新
+- quicklist
+    - quicklist 是一个双向链表，是由 ziplist 组成的，每个节点都是一个 ziplist 组成的
+    - ziplist 本身是一个有序的内存紧缩的列表
+    - quicklist 为什么这么设计，因为 linklist 内存空间不连续，除了数据还有指针空间消耗大
+    - ziplist 数据变动时可能会引发连续更新，降低性能
+    - quicklist 就是综合2个因素做的设计
+    - quicklist 每个节点上的 ziplist 长度是可以配置的
