@@ -26,7 +26,26 @@
 生成证书签名请求的文件 的时候需要输入域名，这个域名跟你接下来要用这个证书部署的域名 没有直接关系，域名不一样也是可以部署成功的
 ```
 
+- linux nginx 安装
+```
+apt-get install gcc
+apt-get install libpcre3 libpcre3-dev
+apt-get install zlib1g zlib1g-dev
+
+sudo apt-get install openssl 
+sudo apt-get install libssl-dev
+
+tar -zxvf nginx-1.18.0.tar.gz
+cd nginx-1.18.0
+./configure --prefix=/home/dev/base-service/nginx/compile/nginx-1.18.0 --pid-path=/home/dev/base-service/nginx/compile/nginx-1.18.0/logs/nginx.pid --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module
+make
+make install
+
+```
+
 - nginx 安装需要的模块
+
+
 
 ```
 linux才可以添加模块，windos 的nginx 是一个执行文件，添加不了模块，但是已经内置了ssl等基本的模块
@@ -37,6 +56,8 @@ linux 的 nginx 如果没有ssl模块的话需要添加，执行下面的命令
 ./configure --prefix=/home/base-service/nginx/compile/nginx-1.19.0 --pid-path=/home/base-service/nginx/compile/nginx-1.19.0/logs/nginx.pid --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module
 make
 make install
+
+./configure --prefix=/home/dev/base-service/nginx/compile/nginx-1.18.0 --pid-path=/home/dev/base-service/nginx/compile/nginx-1.18.0/logs/nginx.pid --with-http_ssl_module --with-http_v2_module --with-http_stub_status_module
 
 
 openresty 安装
