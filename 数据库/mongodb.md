@@ -1,13 +1,16 @@
-mongodb的事务特性是针对单文档的事务，就是单个文档的持久化操作
-遇到执行异常的时候可以回滚，但是多个文档的操作中，某个地方执行异常，
-前面保存的是不会回滚的
-关系型数据库的事务特性是针对一系列的持久化操作，只要开启事务，一有异常全部回滚
+## mongodb 事务
 
-MongoDB在更新单个文档时，会对该文档加锁，而要理解MongoDB的锁机制
-单个文档进行写入操作时候，会进行排他锁机制，保证操作的原子性
+## mongodb 数据迁移导出导入
 
+- mongodb 导出
+```
+mongoexport --host localhost:27017 -d build -c member_coupon_document 
+-q {\"receiveTime\":{\"$gte\":\"2023-01-01\b00:00:00\",\"$lt\":\"2023-04-25\b00:00:00\"}} 
+-o D:\mongo-export\document-2023-01-01.json
+```
 
-mongodb 4.0开始增加了对多文档事务的支持，但是只有在replica set 的情况下才能生效。
-mongodb没有像mysql那样的隔离级别，redo log, undo log日志稳健来实现事务，
-而是通过副本集之间的数据比对，事务提交时，会产生一个半提交的效果，将数据持久化到一个节点
-上，出现回滚的时候，将备份节点的数据比对，然后应用到被修改的节点上
+- mongodb 导入
+```
+mongoimport --host localhost:27017 -d build -c coupon_document_2023_01_01 
+--file D:\mongo-export\document-2023-01-01.json
+```
