@@ -1,4 +1,9 @@
 ## mongodb 事务
+- MongoDB 3.0版本引入WiredTiger存储引擎之后开始支持事务 
+- MongoDB 3.6之前的版本只能支持单文档的事务 
+- MongoDB 4.0版本开始支持复制集部署模式下的事务
+- MongoDB 4.2版本开始支持分片集群中的事务
+- mongodb 也有类似Mysql binlog 日志类似的 oplog 文件，记录事务的操作
 
 ## mongodb 数据迁移导出导入
 
