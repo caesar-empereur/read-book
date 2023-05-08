@@ -108,4 +108,4 @@
   |----|------|------|------|----|-----|
   |悲观锁|先 select for update, 再 update count=count-1|15|90%|450|否|
   |乐观锁|update set count=count-1, version=v+1 where id=* and v=*|150|90%|50|否|
-  |无锁|update set count=count-1 where id=* and count>1|450|90%|500|否|
+  |无锁|update set count=count-1 where id=* and count>1|450|100%|500|否|
