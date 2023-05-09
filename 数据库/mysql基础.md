@@ -233,8 +233,6 @@ mysql 更新如果是针对唯一索引的某一行纪录，会用行锁锁主�
 - 只要 redo log 和 binlog 保证持久化到磁盘，就能确保 MySQL 异常重启后，数据可以恢复
 - binlog 的写入机制
     - 事务的 binlog 是不能拆分的，不管事务多大，都要保证一次性写入
-    - 事务执行过程中，先把日志写到 binlog cache
-    - 事务提交的时候，再把 binlog cache 写到 binlog 文件中
     - binlog 是每个线程独有的
     - 在出现 IO 瓶颈的场景里，将 sync_binlog 设置成一个比较大的值，可以提升性能
     - 对应的风险是：如果主机发生异常重启，会丢失最近 N 个事务的 binlog 日志
@@ -249,16 +247,19 @@ mysql 更新如果是针对唯一索引的某一行纪录，会用行锁锁主�
     - 每次提交事务都要写2个日志，其实磁盘IO并不少，但是效率很高
     - redo log 和 binlog 都是顺序写，磁盘的顺序写比随机写速度要快
     - 组提交机制，可以大幅度降低磁盘的 IOPS 消耗
-- 为什么 binlog cache 是每个线程自己维护的，而 redo log buffer 是全局共用的？
-    - binlog 是不能被打断的。一个事务的binlog必须连续写，因此要整个事务完成后，再一起写到文件里
-    - 一个线程只能有一个事务在执行
-    - redo log 中间有生成的日志可以写到 redo log buffer 中,内容还能搭便车
 - 事务还没提交数据库挂掉了，会不会导致数据不一致
     - 不会，没提交的事务就不会持久化，因此不存在不一致的问题
 - mysql binlog 的日志格式和内容
     - 如果格式是 statement,就是保存原始的sql 语句
-
-
+    - row 格式保存是的一行数据修改前后的值
+    - mixed 格式是上面两种的混合
+    - **[statement 格式对有些语句是有问题的,例如 set a = a+1,这个语句再执行的话数据就错乱了](#)**
+    - show binlog EVENTS in 'build-binlog.000001' 可以查看日志发生的变动事件
+- mysql binlog 日志恢复数据
+    - mysql 开启binlog日志
+    - show binlog EVENTS in 'build-binlog.000001' 查看日志发生的变动
+    - 转储binlog 为 sql 文件 mysqlbinlog --no-defaults D:\dev\app\mysql\build-binlog.000001 > D:\build-binlog.sql
+    - 进入mysql, source binlog.sql 恢复数据
 ## 误删数据怎么处理
 - 误删行
     - 可以用 Flashback 工具通过闪回把数据恢复回来

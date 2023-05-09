@@ -10,7 +10,7 @@
 - mongodb 导出
 ```
 mongoexport --host localhost:27017 -d build -c member_coupon_document 
--q {\"receiveTime\":{\"$gte\":\"2023-01-01\b00:00:00\",\"$lt\":\"2023-04-25\b00:00:00\"}} 
+-q {\"receiveTime\":{\"$gte\":\"2023-04-01\b00:00:00\",\"$lt\":\"2023-04-25\b00:00:00\"}} 
 -o D:\mongo-export\document-2023-01-01.json
 ```
 
