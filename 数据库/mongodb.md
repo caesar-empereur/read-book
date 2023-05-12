@@ -18,4 +18,6 @@ mongoexport --host localhost:27017 -d build -c member_coupon_document
 ```
 mongoimport --host localhost:27017 -d build -c coupon_document_2023_01_01 
 --file D:\mongo-export\document-2023-01-01.json
+
+mysqlbinlog --no-defaults D:\dev\app\mysql\mysql-5.7.33-winx64\data\build-binlog.000001 > D:\build-binlog.sql
 ```

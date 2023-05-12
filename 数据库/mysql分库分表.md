@@ -66,7 +66,7 @@
       - 观察同步工具的输出，如果同步的日志输出已经变少了，说明2个库增量差距的部分已经同步完了，当前2个库数据已经一致了，并且实时更新
       - 这时候开始新起一个新的应用，连接双数据源，并且把同步工具停止掉(为了防止新库有问题可以马上切回旧库)
       - 持续观察一段时间，如果没问题，把双数据源停止，修改连接，只连新的库
-        ![tps-qps](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/单库到分库的迁移.png)
+        ![tps-qps](https://github.com/caesar-empereur/read-book/blob/master/photo/mysql/历史数据迁移.png)
 
 - 在原分库分表的基础上进行扩容
     - 扩容的数据迁移是跟分片方案息息相关的，有一种方式可以实现部分扩容不用迁移数据
