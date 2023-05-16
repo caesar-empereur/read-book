@@ -178,6 +178,10 @@ public interface ScheduledExecutorService extends ExecutorService {
             - 调用 execute 方法提交线程时，异常信息会输出
             - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
     - tomcat 线程池的特点与jdk线程池的区别
+        - tomcat线程池运行的线程超过核心线程数，小于最大数，只要队列没满就创建线程处理
+        - JDK线程是超过核心数，先加入到队列，队列满了并且小于最大数，才会创建线程处理
+        - tomcat是IO密集型的，JDK是CPU密集型的
+        - tomcat是处理http服务的，需要优先响应请求线程
     ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
 
     - 线程池使用的注意点
