@@ -177,23 +177,25 @@ public interface ScheduledExecutorService extends ExecutorService {
             - 准确的描述是线程池中抛出了一个没有 try catch 的异常会怎么处理？
             - 调用 execute 方法提交线程时，异常信息会输出
             - 调用 submit 方法时，异常信息不会输出，只有调用 future.get 方法才会输出异常
-    - tomcat 线程池的特点与jdk线程池的区别
-        - tomcat线程池运行的线程超过核心线程数，小于最大数，只要队列没满就创建线程处理
-        - JDK线程是超过核心数，先加入到队列，队列满了并且小于最大数，才会创建线程处理
-        - tomcat是IO密集型的，JDK是CPU密集型的
-        - tomcat是处理http服务的，需要优先响应请求线程
-    ![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
+- tomcat 线程池的特点与jdk线程池的区别
+    - tomcat线程池运行的线程超过核心线程数，小于最大数，只要队列没满就创建线程处理
+    - JDK线程是超过核心数，先加入到队列，队列满了并且小于最大数，才会创建线程处理
+    - tomcat是IO密集型的，JDK是CPU密集型的
+    - tomcat是处理http服务的，需要优先响应请求线程
+![ThreadPoolExecutor](https://github.com/caesar-empereur/read-book/blob/master/photo/conc/Tomcat-ThreadPool.png)
 
-    - 线程池使用的注意点
-        - 队列设置过长，最大线程数设置会失效
-        ```
-        该服务处理请求内部逻辑使用线程池做资源隔离，由于队列设置过长，最大线程数设置失效，
-        导致请求数量增加时，大量任务堆积在队列中，
-        任务执行时间过长，最终导致下游服务的大量调用超时失败
-        ```
-        
-        - 最大核心数设置偏小
-        ```
-        该服务展示接口内部逻辑使用线程池做并行计算，由于没有预估好调用的流量，
-        导致最大核心数设置偏小，大量抛出RejectedExecutionException，触发接口降级条件
-        ```
+- 线程池使用的注意点
+    - 线程池的队列满了是指队列是设置了容量的或者是有界队列
+    - 队列是无解队列或者没有设置容量的话，是没有队列满了这个条件的，线程会一直等待执行
+    - 队列设置过长，最大线程数设置会失效
+    ```
+    该服务处理请求内部逻辑使用线程池做资源隔离，由于队列设置过长，最大线程数设置失效，
+    导致请求数量增加时，大量任务堆积在队列中，
+    任务执行时间过长，最终导致下游服务的大量调用超时失败
+    ```
+    
+    - 最大核心数设置偏小
+    ```
+    该服务展示接口内部逻辑使用线程池做并行计算，由于没有预估好调用的流量，
+    导致最大核心数设置偏小，大量抛出RejectedExecutionException，触发接口降级条件
+    ```
