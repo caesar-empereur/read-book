@@ -25,7 +25,7 @@
 |集群部署机制|多主多从|普通集群模式，镜像集群模式|broker有leader, follower|
 |高可用机制|通过name节点控制broker的主从切换|节点的镜像集群模式|通过zk控制broker的主从切换, partition级别的副本|
 |适用的场景|金融，交易，订单, binlog 分发|数据量不大,需要队列跟topic灵活配置的|大数据，日志，离线数据处理|
-|扩展性|新增broker节点加入到集群，新的broker默认只负责新增的 topic|新增broker节点加入到集群|新增broker节点加入到集群，新的broker默认只负责新增的 topic,旧topic的分区数据得手动迁移|
+|扩展性|新增broker节点加入到集群，新的broker默认只负责新增的 topic|每个节点都保存了所有的topic数据，现有数据很难扩容重新分配|新增broker节点加入到集群，新的broker默认只负责新增的 topic,旧topic的分区数据得手动迁移|
 
 
 
