@@ -75,9 +75,9 @@ public class B {
         - B实例和它的属性弄完之后到了A，A 属性依赖B，就去 getBean()把B拿出来设置到A里面
         - A，B 对象在 **[半成品]()** 的时候，其实是一个 ObjectFactory 对象
 - ioc容器有几种类型？
-    - beanfactory 和 applicationcontext.
-- beanfactory和applicationcontext有什么区别？
-    - beanfactory是基本容器，而applicationcontext是高级容器。Applicationcontext是扩展了beanfactory的接口
+    - BeanFactory 和 ApplicationContext.
+- BeanFactory 和 ApplicationContext 有什么区别？
+    - BeanFactory 是基本容器，而 ApplicationContext 是高级容器。Applicationcontext 是扩展了 BeanFactory 的接口
     - apc 提供了更多的有用的功能。如国际化，访问资源，载入多个（有继承关系）上下文
     - apc 使得每一个上下文都专注于一个特定的层次，消息发送、响应机制，AOP
     - beanfactory 的bean 是懒加载实例化，获取的时候发现没有才会实例化，Applicationcontext是启动完就会实例化
@@ -144,19 +144,26 @@ public class Service {
 }
 ```
 
-- **[Spring AOP]()**
+- Spring AOP
     - OOP关注的是对象，AOP关注的是切面，AOP 是面向切面编程的思想，是OOP的一种补充
     - AOP的编程思想就是把业务逻辑和横切的问题进行分离，从而达到解耦的目的，使代码的重用性和开发效率高
     
     - AOP的应用场景有哪些?
         - 日志记录
         - 权限验证
-        - 事务管理（spring 的事务就是用AOP实现的）
+        - 事务管理
     - spring AOP 默认使用jdk动态代理还是cglib？
         - 要看条件，如果实现了接口的类，是使用jdk。如果没实现接口，就使用cglib
     - 是编译时期进行织入，还是运行期进行织入？
         - 运行期，生成字节码，再加载到虚拟机中，JDK是利用反射原理，CGLIB使用了ASM原理
-
+- spring aop 或者是 事务注解的原理
+    - springboot 的 spring.factories 声明了很多组件的自动装配，其中就包含了事务(或者aop)的自动配置组件
+    - 这个组件会向容器注册事务(或者aop)的代理对象，只要扫描的类方法里面有事务注解(aop注解)就会注册代理对象
+    - 这些有事务注解的bean在容器里面创建对象的时候，创建的bean对象实际是一个代理对象
+    - 代理对象持有原对象的一个引用，对原对象的方法调用进行前后封装
+    - 前后封装是指原对象的方法用了 try catch 包起来，每一场事务提交，有异常事务回滚
+    - 以后每次调用原对象的方法都是调用代理对象的方法
+  
 - spring 常用的设计模式
     - 工厂模式
         - Spring使用工厂模式可以通过 BeanFactory 或 ApplicationContext 创建 bean 对象
